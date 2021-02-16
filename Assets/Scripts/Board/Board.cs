@@ -8,6 +8,8 @@ public class Board
 {
     long evaluation;
     string[,] boardCell = new string[8, 8];
+    bool canNCastling = true;
+    bool canFCastling = true;
     /*
      * Cell assign:
      * white side: Normal characters
@@ -85,4 +87,6 @@ public class Board
 
     public long Evaluation { get => evaluation; set => evaluation = value; }
     public string[,] BoardCells { get => boardCell; set => boardCell = value; }
+    public bool CanNCastling { get => canNCastling; set => canNCastling = value; }
+    public bool CanFCastling { get => canFCastling; set => canFCastling = value; }
 }

@@ -5,24 +5,17 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-    public struct Coordinate
-    {
-        public int x;
-        public int y;
-    }
 
     GameObject playBoard;
 
-    Coordinate coor;
+    Vector2 coor;
     string piece;
+    BoxCollider2D boxCol2D;
+    bool canMoveTo;
 
     public string Piece { get => piece; set => piece = value; }
-
-    public void SetCoor(int x, int y)
-    {
-        coor.x = x;
-        coor.y = y;
-    }
+    public Vector2 Coor { get => coor; set => coor = value; }
+    public bool CanMoveTo { get => canMoveTo; set => canMoveTo = value; }
 
     // Start is called before the first frame update
     void Awake()
@@ -33,7 +26,7 @@ public class Cell : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void Init()
@@ -42,11 +35,15 @@ public class Cell : MonoBehaviour
         coor.y = 0;
 
         playBoard = GameObject.Find("PlayBoard");
+
+        boxCol2D = GetComponent<BoxCollider2D>();
     }
 
     private void OnDrawGizmos()
     {
-        string piece = playBoard.GetComponent<PlayBoard>().BoardStack.Peek().BoardCells[coor.x, coor.y];
+        int pieceX = System.Convert.ToInt32(coor.x);
+        int pieceY = System.Convert.ToInt32(coor.y);
+        string piece = playBoard.GetComponent<PlayBoard>().BoardStack.Peek().BoardCells[pieceX, pieceY];
         Handles.Label(transform.position - new Vector3(2f, -2f, 0f), coor.x + ", " + coor.y);
         Handles.Label(transform.position - new Vector3(2f, -1f, 0f), piece);
     }
