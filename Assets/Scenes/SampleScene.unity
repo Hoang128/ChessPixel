@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 208154805}
   - component: {fileID: 208154804}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: InputManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -280,6 +280,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lightCellObject: {fileID: 2162782701100024920, guid: ef7eca374cf9bee46a6971406084c8d8, type: 3}
   darkCellObject: {fileID: 6319443893158641036, guid: 2180a6d77c98fbf449213dab1fec0e19, type: 3}
+  moveMarkObject: {fileID: 4136555737248255070, guid: 48d9b1b65db49b14f89b56557dc60189, type: 3}
+  captureMarkObject: {fileID: 7658253087374125491, guid: 3d888bb1f76250341a45e7261e9fc6db, type: 3}
+  playerWhite: {fileID: 4563212219635069427, guid: 3dd77e89405ff5947874c872bcdf8cae, type: 3}
+  playerBlack: {fileID: 4563212219635069427, guid: 3dd77e89405ff5947874c872bcdf8cae, type: 3}
   cellSize: 5
 --- !u!4 &1773131077
 Transform:
@@ -289,7 +293,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1773131075}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -17.5, y: -23.4, z: -2.0949035}
+  m_LocalPosition: {x: -17.5, y: -23.4, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

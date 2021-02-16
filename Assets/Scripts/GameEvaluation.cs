@@ -49,8 +49,8 @@ public static class GameEvaluation
                         case "P":   newEvaluation -= pawnVal; break;
                     }
 
-                    bool hasUppercase = !boardCell[i, j].Equals(boardCell[i, j].ToLower());
-                    if (!hasUppercase)
+                    bool isWhite = RuleHandler.isWhitePiece(new Vector2(i, j), boardCell);
+                    if (isWhite)
                         newEvaluation += GameEvaluation.cellVal[i, j];
                     else
                         newEvaluation -= GameEvaluation.cellVal[i, j];

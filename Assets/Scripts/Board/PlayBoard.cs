@@ -6,26 +6,40 @@ public class PlayBoard : MonoBehaviour
 {
     [SerializeField] GameObject lightCellObject;
     [SerializeField] GameObject darkCellObject;
-    [SerializeField] float cellSize = 5f;
+    [SerializeField] GameObject moveMarkObject;
+    [SerializeField] GameObject captureMarkObject;
 
-    struct Coordinate
-    {
-        public float x;
-        public float y;
-    }
+    [SerializeField] GameObject playerWhite;
+    [SerializeField] GameObject playerBlack;
+    [SerializeField] float cellSize = 5f;
 
     private StateMachine stateMachine;
     private Stack<Board> boardStack;
-    private GameObject[,] cellUI; 
+    private GameObject[,] cellUI;
+    private Vector2 clickPoint;
+    private bool whiteTurn = true;
 
     public Stack<Board> BoardStack { get => boardStack; set => boardStack = value; }
+    public Vector2 ClickPoint { get => clickPoint; set => clickPoint = value; }
+    public float CellSize { get => cellSize; set => cellSize = value; }
+    public bool WhiteTurn { get => whiteTurn; set => whiteTurn = value; }
+    public GameObject PlayerWhite { get => playerWhite; set => playerWhite = value; }
+    public GameObject PlayerBlack { get => playerBlack; set => playerBlack = value; }
+    public GameObject MoveMarkObject { get => moveMarkObject; set => moveMarkObject = value; }
+    public GameObject CaptureMarkObject { get => captureMarkObject; set => captureMarkObject = value; }
 
     // Start is called before the first frame update
     void Start()
     {
+        stateMachine = new StateMachine();
         stateMachine.StateChange(new BoardStateIdle(stateMachine, this));
         InitPlayBoard();
         InitUIBoard();
+
+        GameObject.Instantiate(playerWhite);
+        playerWhite.GetComponent<PlayerMgr>().IsWhite = true;
+        GameObject.Instantiate(playerBlack);
+        playerBlack.GetComponent<PlayerMgr>().IsWhite = true;
 
         string[,] startCell = new string[8, 8]
         {
@@ -43,13 +57,16 @@ public class PlayBoard : MonoBehaviour
 
         UpdatePlayBoard(startBoard);
         UpdateUIBoard();
+
+        clickPoint.x = -1;
+        clickPoint.y = -1;
         boardStack.Peek().Log();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        stateMachine.StateHandle();
     }
 
     void UpdatePlayBoard(Board newBoard)
@@ -78,9 +95,7 @@ public class PlayBoard : MonoBehaviour
     public void InitUIBoard()
     {
         cellUI = new GameObject[8, 8];
-        Coordinate relativeCreatePos;
-        relativeCreatePos.x = 0f;
-        relativeCreatePos.y = 0f;
+        Vector2 relativeCreatePos = new Vector2(0, 0);
 
         for (int i = 0; i < 8; i++)
         {
@@ -104,7 +119,7 @@ public class PlayBoard : MonoBehaviour
                         cellUI[j, i] = Instantiate(darkCellObject, createPos, transform.rotation);
                 }
 
-                cellUI[j, i].GetComponent<Cell>().SetCoor(j, i);
+                cellUI[j, i].GetComponent<Cell>().Coor = new Vector2(j, i);
             }
         }
     }
