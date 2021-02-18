@@ -133,13 +133,15 @@ public class PlayBoard : MonoBehaviour
                 }
 
                 cellUI[i, j].GetComponent<Cell>().Coor = new Vector2(i, j);
+                cellUI[i, j].GetComponent<Cell>().Piece = boardStack.Peek().BoardCells[i, j];
             }
         }
     }
 
     private void OnDrawGizmos()
     {
-        Handles.Label(transform.position + new Vector3(0f, -10f, 0f), "white turn = " + WhiteTurn);
+        Handles.Label(transform.position + new Vector3(0f, -8f, 0f), "white turn = " + WhiteTurn);
+        Handles.Label(transform.position + new Vector3(0f, -10f, 0f), "evaluation = " + BoardStack.Peek().Evaluation);
         Handles.Label(transform.position + new Vector3(0f, -12f, 0f), "click point = " + clickPoint.x + ", " + clickPoint.y);
     }
 }

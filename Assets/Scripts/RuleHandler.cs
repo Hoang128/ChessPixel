@@ -47,9 +47,9 @@ public static class RuleHandler
                     case "k": break;
                     case "q": break;
                     case "b": break;
-                    case "kn": break;
+                    case "kn":      moveList = FindKnightMove(point, board); break;
                     case "r": break;
-                    case "p": moveList = FindPawnMove(point, board); break;
+                    case "p":       moveList = FindPawnMove(point, board); break;
                 }
         }
         else
@@ -59,11 +59,55 @@ public static class RuleHandler
                     case "K": break;
                     case "Q": break;
                     case "B": break;
-                    case "KN": break;
+                    case "KN":      moveList = FindKnightMove(point, board); break;
                     case "R": break;
-                    case "P": moveList = FindPawnMove(point, board); break;
+                    case "P":       moveList = FindPawnMove(point, board); break;
                 }
         }
+
+        return moveList;
+    }
+
+    public static MoveList FindRookMove(Vector2 point, Board board)
+    {
+        MoveList moveList = new MoveList();
+        moveList.movePlace = new Queue<Vector2>();
+
+        moveList.piecePlace = point;
+        int pointX = System.Convert.ToInt32(point.x);
+        int pointY = System.Convert.ToInt32(point.y);
+
+
+
+        return moveList;
+    }
+
+    public static MoveList FindKnightMove(Vector2 point, Board board)
+    {
+        MoveList moveList = new MoveList();
+        moveList.movePlace = new Queue<Vector2>();
+
+        moveList.piecePlace = point;
+        int pointX = System.Convert.ToInt32(point.x);
+        int pointY = System.Convert.ToInt32(point.y);
+
+        if ((((pointX - 1) >= 0) && (pointY - 2) >= 0) && (board.BoardCells[pointX - 1, pointY - 2] == "0"))
+            moveList.movePlace.Enqueue(new Vector2(pointX - 1, pointY - 2));
+        if ((((pointX + 1) <= 7) && (pointY - 2) >= 0) && (board.BoardCells[pointX + 1, pointY - 2] == "0"))
+            moveList.movePlace.Enqueue(new Vector2(pointX + 1, pointY - 2));
+        if ((((pointX - 1) >= 0) && (pointY + 2) <= 7) && (board.BoardCells[pointX - 1, pointY + 2] == "0"))
+            moveList.movePlace.Enqueue(new Vector2(pointX - 1, pointY + 2));
+        if ((((pointX + 1) <= 7) && (pointY + 2) <= 7) && (board.BoardCells[pointX + 1, pointY + 2] == "0"))
+            moveList.movePlace.Enqueue(new Vector2(pointX + 1, pointY + 2));
+
+        if ((((pointX - 2) >= 0) && (pointY - 1) >= 0) && (board.BoardCells[pointX - 2, pointY - 1] == "0"))
+            moveList.movePlace.Enqueue(new Vector2(pointX - 2, pointY - 1));
+        if ((((pointX + 2) <= 7) && (pointY - 1) >= 0) && (board.BoardCells[pointX + 2, pointY - 1] == "0"))
+            moveList.movePlace.Enqueue(new Vector2(pointX + 2, pointY - 1));
+        if ((((pointX - 2) >= 0) && (pointY + 1) <= 7) && (board.BoardCells[pointX - 2, pointY + 1] == "0"))
+            moveList.movePlace.Enqueue(new Vector2(pointX - 2, pointY + 1));
+        if ((((pointX + 2) <= 7) && (pointY + 1) <= 7) && (board.BoardCells[pointX + 2, pointY + 1] == "0"))
+            moveList.movePlace.Enqueue(new Vector2(pointX + 2, pointY + 1));
 
         return moveList;
     }

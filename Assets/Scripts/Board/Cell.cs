@@ -11,11 +11,9 @@ public class Cell : MonoBehaviour
     Vector2 coor;
     string piece;
     BoxCollider2D boxCol2D;
-    bool canMoveTo;
 
     public string Piece { get => piece; set => piece = value; }
     public Vector2 Coor { get => coor; set => coor = value; }
-    public bool CanMoveTo { get => canMoveTo; set => canMoveTo = value; }
 
     // Start is called before the first frame update
     void Awake()
