@@ -12,6 +12,7 @@ public class BoardStateChooseMove : BoardState
     Vector2 clickPoint;
     RuleHandler.MoveList moveList;
     Vector2 startPosition;
+    bool moved = false;
 
     public BoardStateChooseMove(StateMachine stateMachine, PlayBoard boardController) : base(stateMachine, boardController)
     {
@@ -23,13 +24,15 @@ public class BoardStateChooseMove : BoardState
     {
         Debug.Log("Entered Board State Choose Move!");
 
+        boardController.GetComponent<PlayBoard>().StateName = "Board Choose Move";
+
         //Choose move side
         if (boardController.WhiteTurn)
         {
-            player = boardController.PlayerWhite;
+            player = boardController.PlayerWhiteMgr;
         }
         else
-            player = boardController.PlayerBlack;
+            player = boardController.PlayerBlackMgr;
 
         clickPoint = boardController.GetComponent<PlayBoard>().ClickPoint;
         cellSize = boardController.GetComponent<PlayBoard>().CellSize;
@@ -38,16 +41,22 @@ public class BoardStateChooseMove : BoardState
         captureMark = boardController.GetComponent<PlayBoard>().CaptureMarkObject;
         startPosition = boardController.transform.position;
         moveList = RuleHandler.FindMove(clickPoint, currentBoard, player.GetComponent<PlayerMgr>().IsWhite);
-
-        Debug.Log("piece place = " + moveList.piecePlace.x + ", " + moveList.piecePlace.y);
         foreach (Vector2 movePlace in moveList.movePlace)
         {
             int movePlaceX = System.Convert.ToInt32(movePlace.x);
             int movePlaceY = System.Convert.ToInt32(movePlace.y);
-            if (currentBoard.BoardCells[movePlaceY, movePlaceX] == "0")
-                GameObject.Instantiate(moveMark, startPosition + new Vector2(movePlaceX * cellSize, movePlaceY * cellSize), boardController.transform.rotation);
+            Vector2 createPos = startPosition + new Vector2(movePlaceX * cellSize, movePlaceY * cellSize);
+            GameObject mark;
+            if (currentBoard.BoardCells[movePlaceX, movePlaceY] == "0")
+            {
+                mark = GameObject.Instantiate(moveMark, createPos, boardController.transform.rotation);
+                mark.GetComponent<Mark>().Coor = new Vector2(movePlaceX, movePlaceY);
+            }
             else
-                GameObject.Instantiate(captureMark, startPosition + new Vector2(movePlaceX * cellSize, movePlaceY * cellSize), boardController.transform.rotation);
+            {
+                mark = GameObject.Instantiate(captureMark, createPos, boardController.transform.rotation);
+                mark.GetComponent<Mark>().Coor = new Vector2(movePlaceX, movePlaceY);
+            }
         }
     }
 
@@ -58,31 +67,56 @@ public class BoardStateChooseMove : BoardState
         {
             GameObject.Destroy(marker);
         }
+
+        boardController.ClickPoint = new Vector2(-1, -1);
+
+        if (moved)
+        {
+            if (boardController.WhiteTurn)
+            {
+                boardController.WhiteTurn = false;
+                return;
+            }
+            else
+            {
+                boardController.WhiteTurn = true;
+                return;
+            }
+        }
     }
 
     public override void OnUpdate()
     {
-        if (boardController.WhiteTurn)
+        if (boardController.ClickPoint == new Vector2(-1, -1))
         {
-            if (boardController.PlayerWhite.GetComponent<PlayerMgr>().FinalMovePlace != new Vector2(-1, -1))
-            {
-                Vector2 movePlace = boardController.PlayerWhite.GetComponent<PlayerMgr>().FinalMovePlace;
-                Board newBoard = RuleHandler.movePiece(clickPoint, movePlace, currentBoard); 
-                boardController.GetComponent<PlayBoard>().BoardStack.Push(newBoard);
-            }
-
             stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
         }
         else
         {
-            if (boardController.PlayerBlack.GetComponent<PlayerMgr>().FinalMovePlace != new Vector2(-1, -1))
+            if (boardController.WhiteTurn)
             {
-                Vector2 movePlace = boardController.PlayerBlack.GetComponent<PlayerMgr>().FinalMovePlace;
-                Board newBoard = RuleHandler.movePiece(clickPoint, movePlace, currentBoard);
-                boardController.GetComponent<PlayBoard>().BoardStack.Push(newBoard);
+                if (boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace != new Vector2(-1, -1))
+                {
+                    Vector2 movePlace = boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace;
+                    Board newBoard = RuleHandler.movePiece(clickPoint, movePlace, currentBoard);
+                    boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
+                    boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2(-1, -1);
+                    moved = true;
+                    stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
+                }
             }
-
-            stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
+            else
+            {
+                if (boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace != new Vector2(-1, -1))
+                {
+                    Vector2 movePlace = boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace;
+                    Board newBoard = RuleHandler.movePiece(clickPoint, movePlace, currentBoard);
+                    boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
+                    boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2(-1, -1);
+                    moved = true;
+                    stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
+                }
+            }
         }
     }
 

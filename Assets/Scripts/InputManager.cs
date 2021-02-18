@@ -9,11 +9,12 @@ public class InputManager : MonoBehaviour
     bool canTouch = true;
     Vector2 touchPoint;
     RaycastHit2D touchHit;
+    GameObject playBoard;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        playBoard = GameObject.Find("PlayBoard");
     }
 
     // Update is called once per frame
@@ -37,6 +38,8 @@ public class InputManager : MonoBehaviour
                     {
                         case "Marker":
                             {
+                                HandleMarkTouch(touchHit.collider.gameObject);
+
                                 Debug.Log("Handled marker touch!");
                             }
                             break;
@@ -51,7 +54,10 @@ public class InputManager : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Hit none");
+                    if (playBoard.GetComponent<PlayBoard>().StateName == "Board Choose Move")
+                    {
+                        playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2(-1, -1);
+                    }
                 }
 
                 canTouch = false;
@@ -69,35 +75,40 @@ public class InputManager : MonoBehaviour
 
     void HandleCellTouch(GameObject cell)
     {
-        //cell = touchHit.collider.gameObject;
-        //Vector2 clickPoint = playBoard.GetComponent<PlayBoard>().ClickPoint;
-        //Board board = playBoard.GetComponent<PlayBoard>().BoardStack.Peek();
+        if (playBoard.GetComponent<PlayBoard>().StateName == "Board Idle")
+        {
+            if (cell.GetComponent<Cell>().Piece != "0")
+            {
+                bool whiteTurn = playBoard.GetComponent<PlayBoard>().WhiteTurn;
+                bool whitePiece = RuleHandler.isWhitePiece(cell.GetComponent<Cell>().Coor, playBoard.GetComponent<PlayBoard>().BoardStack.Peek().BoardCells);
 
-        //if (clickPoint != new Vector2(-1, -1))
-        //{
-        //    if (canMoveTo == true)
-        //    {
-        //        if (playBoard.GetComponent<PlayBoard>().WhiteTurn)
-        //        {
-        //            playBoard.GetComponent<PlayBoard>().PlayerWhite.GetComponent<PlayerMgr>().FinalMovePlace = coor;
-        //        }
-        //        else
-        //        {
-        //            playBoard.GetComponent<PlayBoard>().PlayerBlack.GetComponent<PlayerMgr>().FinalMovePlace = coor;
-        //        }
-        //        canMoveTo = false;
-        //    }
-        //}
-        //else
-        //{
-        //    if (piece != "0")
-        //    {
-        //        bool pieceIsWhite = RuleHandler.isWhitePiece(new Vector2(coor.x, coor.y), board.BoardCells);
-        //        bool canMove = ((pieceIsWhite && playBoard.GetComponent<PlayBoard>().WhiteTurn)
-        //            || (!pieceIsWhite && !playBoard.GetComponent<PlayBoard>().WhiteTurn));
-        //        if (canMove)
-        //            playBoard.GetComponent<PlayBoard>().ClickPoint = coor;
-        //    }
-        //}
+                if ((whiteTurn && whitePiece) || (!whiteTurn && !whitePiece))
+                    playBoard.GetComponent<PlayBoard>().ClickPoint = cell.GetComponent<Cell>().Coor;
+            }
+        }
+        else if (playBoard.GetComponent<PlayBoard>().StateName == "Board Choose Move")
+        {
+            playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2(-1, -1);
+        }
+    }
+
+    void HandleMarkTouch(GameObject mark)
+    {
+        if (playBoard.GetComponent<PlayBoard>().WhiteTurn)
+        {
+            if (playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2(-1, -1))
+            {
+                Vector2 move = mark.GetComponent<Mark>().Coor;
+                playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace = move;
+            }
+        }
+        else
+        {
+            if (playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2(-1, -1))
+            {
+                Vector2 move = mark.GetComponent<Mark>().Coor;
+                playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace = move;
+            }
+        }
     }
 }

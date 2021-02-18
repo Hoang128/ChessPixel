@@ -15,6 +15,7 @@ public class BoardStateIdle : BoardState
         Debug.Log("Entered Board State Idle!");
 
         boardController.GetComponent<PlayBoard>().ClickPoint = new Vector2(-1, -1);
+        boardController.GetComponent<PlayBoard>().StateName = "Board Idle";
         boardController.PlayerBlack.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2(-1, -1);
         boardController.PlayerWhite.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2(-1, -1);
     }

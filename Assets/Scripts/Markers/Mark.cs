@@ -4,33 +4,19 @@ using UnityEngine;
 
 public class Mark : MonoBehaviour
 {
-    GameObject cellUnder;
+    Vector2 coor;
+
+    public Vector2 Coor { get => coor; set => coor = value; }
+
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        cellUnder = null;
+        coor = new Vector2(0, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
         
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "Cell")
-        {
-            if (cellUnder == null)
-            {
-                cellUnder = collision.gameObject;
-                cellUnder.GetComponent<Cell>().CanMoveTo = true;
-            }
-        }
-    }
-
-    private void OnDestroy()
-    {
-        cellUnder.GetComponent<Cell>().CanMoveTo = false;
     }
 }

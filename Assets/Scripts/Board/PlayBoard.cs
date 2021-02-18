@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayBoard : MonoBehaviour
@@ -17,7 +18,10 @@ public class PlayBoard : MonoBehaviour
     private Stack<Board> boardStack;
     private GameObject[,] cellUI;
     private Vector2 clickPoint;
+    private string stateName = null;
     private bool whiteTurn = true;
+    private GameObject playerWhiteMgr;
+    private GameObject playerBlackMgr;
 
     public Stack<Board> BoardStack { get => boardStack; set => boardStack = value; }
     public Vector2 ClickPoint { get => clickPoint; set => clickPoint = value; }
@@ -27,6 +31,9 @@ public class PlayBoard : MonoBehaviour
     public GameObject PlayerBlack { get => playerBlack; set => playerBlack = value; }
     public GameObject MoveMarkObject { get => moveMarkObject; set => moveMarkObject = value; }
     public GameObject CaptureMarkObject { get => captureMarkObject; set => captureMarkObject = value; }
+    public string StateName { get => stateName; set => stateName = value; }
+    public GameObject PlayerWhiteMgr { get => playerWhiteMgr; set => playerWhiteMgr = value; }
+    public GameObject PlayerBlackMgr { get => playerBlackMgr; set => playerBlackMgr = value; }
 
     // Start is called before the first frame update
     void Start()
@@ -36,21 +43,21 @@ public class PlayBoard : MonoBehaviour
         InitPlayBoard();
         InitUIBoard();
 
-        GameObject.Instantiate(playerWhite);
-        playerWhite.GetComponent<PlayerMgr>().IsWhite = true;
-        GameObject.Instantiate(playerBlack);
-        playerBlack.GetComponent<PlayerMgr>().IsWhite = true;
+        playerWhiteMgr = GameObject.Instantiate(playerWhite);
+        playerWhiteMgr.GetComponent<PlayerMgr>().IsWhite = true;
+        playerBlackMgr = GameObject.Instantiate(playerBlack);
+        playerBlackMgr.GetComponent<PlayerMgr>().IsWhite = false;
 
         string[,] startCell = new string[8, 8]
         {
-            { "r", "kn", "b", "k", "q", "b", "kn", "r" },
-            { "p", "p" , "p", "p", "p", "p", "p" , "p" },
-            { "0", "0" , "0", "0", "0", "0", "0" , "0" },
-            { "0", "0" , "0", "0", "0", "0", "0" , "0" },
-            { "0", "0" , "0", "0", "0", "0", "0" , "0" },
-            { "0", "0" , "0", "0", "0", "0", "0" , "0" },
-            { "P", "P" , "P", "P", "P", "P", "P" , "P" },
-            { "R", "KN", "B", "K", "Q", "B", "KN", "R" }
+            { "r" , "p", "0", "0", "0", "0", "P", "R" },
+            { "kn", "p", "0", "0", "0", "0", "P", "KN" },
+            { "b" , "p", "0", "0", "0", "0", "P", "B" },
+            { "k" , "p", "0", "0", "0", "0", "P", "K" },
+            { "q" , "p", "0", "0", "0", "0", "P", "Q" },
+            { "b" , "p", "0", "0", "0", "0", "P", "B" },
+            { "kn", "p", "0", "0", "0", "0", "P", "KN" },
+            { "r" , "p", "0", "0", "0", "0", "P", "R" }
         };
 
         Board startBoard = new Board(0, startCell);
@@ -67,6 +74,12 @@ public class PlayBoard : MonoBehaviour
     void Update()
     {
         stateMachine.StateHandle();
+    }
+
+    public void UpdateBoard(Board newBoard)
+    {
+        UpdatePlayBoard(newBoard);
+        UpdateUIBoard();
     }
 
     void UpdatePlayBoard(Board newBoard)
@@ -107,20 +120,26 @@ public class PlayBoard : MonoBehaviour
                 if (i % 2 == 0)
                 {
                     if (j % 2 == 0)
-                        cellUI[j, i] = Instantiate(darkCellObject, createPos, transform.rotation);
+                        cellUI[i, j] = Instantiate(darkCellObject, createPos, transform.rotation);
                     else
-                        cellUI[j, i] = Instantiate(lightCellObject, createPos, transform.rotation);
+                        cellUI[i, j] = Instantiate(lightCellObject, createPos, transform.rotation);
                 }
                 else
                 {
                     if (j % 2 == 0)
-                        cellUI[j, i] = Instantiate(lightCellObject, createPos, transform.rotation);
+                        cellUI[i, j] = Instantiate(lightCellObject, createPos, transform.rotation);
                     else
-                        cellUI[j, i] = Instantiate(darkCellObject, createPos, transform.rotation);
+                        cellUI[i, j] = Instantiate(darkCellObject, createPos, transform.rotation);
                 }
 
-                cellUI[j, i].GetComponent<Cell>().Coor = new Vector2(j, i);
+                cellUI[i, j].GetComponent<Cell>().Coor = new Vector2(i, j);
             }
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Handles.Label(transform.position + new Vector3(0f, -10f, 0f), "white turn = " + WhiteTurn);
+        Handles.Label(transform.position + new Vector3(0f, -12f, 0f), "click point = " + clickPoint.x + ", " + clickPoint.y);
     }
 }

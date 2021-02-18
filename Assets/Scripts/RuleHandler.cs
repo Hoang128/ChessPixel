@@ -42,7 +42,7 @@ public static class RuleHandler
 
         if (isWhite)
         {
-            switch (board.BoardCells[pointY, pointX])
+            switch (board.BoardCells[pointX, pointY])
                 {
                     case "k": break;
                     case "q": break;
@@ -54,7 +54,7 @@ public static class RuleHandler
         }
         else
         {
-            switch (board.BoardCells[pointY, pointX])
+            switch (board.BoardCells[pointX, pointY])
                 {
                     case "K": break;
                     case "Q": break;
@@ -77,7 +77,7 @@ public static class RuleHandler
         int pointX = System.Convert.ToInt32(point.x);
         int pointY = System.Convert.ToInt32(point.y);
 
-        switch (board.BoardCells[pointY, pointX])
+        switch (board.BoardCells[pointX, pointY])
         {
             //White Side
             case "p":
@@ -85,14 +85,14 @@ public static class RuleHandler
                     //Move
                     if (pointY == 1)
                     {
-                        if (board.BoardCells[3, pointX] == "0")
+                        if (board.BoardCells[pointX, 3] == "0")
                         {
                             moveList.movePlace.Enqueue(new Vector2 (pointX, 3));
                         }
                     }
                     if (pointY < 7)
                     {
-                        if (board.BoardCells[pointY + 1, pointX] == "0")
+                        if (board.BoardCells[pointX, pointY + 1] == "0")
                         {
                             moveList.movePlace.Enqueue(new Vector2(pointX, pointY + 1));
                         }
@@ -101,7 +101,7 @@ public static class RuleHandler
                     //Capture
                     if (pointX > 0)
                     {
-                        if (board.BoardCells[pointY + 1, pointX - 1] != "0")
+                        if (board.BoardCells[pointX - 1, pointY + 1] != "0")
                         {
                             moveList.movePlace.Enqueue(new Vector2(pointX - 1, pointY + 1));
                         }
@@ -109,7 +109,7 @@ public static class RuleHandler
 
                     if (pointX < 7)
                     {
-                        if (board.BoardCells[pointY + 1, pointX + 1] != "0")
+                        if (board.BoardCells[pointX + 1, pointY + 1] != "0")
                         {
                             moveList.movePlace.Enqueue(new Vector2(pointX + 1, pointY + 1));
                         }

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2595839444827417872}
   - component: {fileID: 4935911129803026024}
   - component: {fileID: -6666734773283648773}
+  - component: {fileID: -7299776218905500348}
   m_Layer: 0
   m_Name: moveMark
   m_TagString: Marker
@@ -109,3 +110,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.67, y: 1.67}
   m_EdgeRadius: 0
+--- !u!114 &-7299776218905500348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4136555737248255070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eaf41f26944d97645aefe381b4bd0fa6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
