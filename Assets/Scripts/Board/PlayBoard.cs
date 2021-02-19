@@ -17,14 +17,14 @@ public class PlayBoard : MonoBehaviour
     private StateMachine stateMachine;
     private Stack<Board> boardStack;
     private GameObject[,] cellUI;
-    private Vector2 clickPoint;
+    private Vector2Int clickPoint;
     private string stateName = null;
     private bool whiteTurn = true;
     private GameObject playerWhiteMgr;
     private GameObject playerBlackMgr;
 
     public Stack<Board> BoardStack { get => boardStack; set => boardStack = value; }
-    public Vector2 ClickPoint { get => clickPoint; set => clickPoint = value; }
+    public Vector2Int ClickPoint { get => clickPoint; set => clickPoint = value; }
     public float CellSize { get => cellSize; set => cellSize = value; }
     public bool WhiteTurn { get => whiteTurn; set => whiteTurn = value; }
     public GameObject PlayerWhite { get => playerWhite; set => playerWhite = value; }
@@ -53,8 +53,8 @@ public class PlayBoard : MonoBehaviour
             { "r" , "p", "0", "0", "0", "0", "P", "R" },
             { "kn", "p", "0", "0", "0", "0", "P", "KN" },
             { "b" , "p", "0", "0", "0", "0", "P", "B" },
-            { "k" , "p", "0", "0", "0", "0", "P", "K" },
             { "q" , "p", "0", "0", "0", "0", "P", "Q" },
+            { "k" , "p", "0", "0", "0", "0", "P", "K" },
             { "b" , "p", "0", "0", "0", "0", "P", "B" },
             { "kn", "p", "0", "0", "0", "0", "P", "KN" },
             { "r" , "p", "0", "0", "0", "0", "P", "R" }
@@ -94,6 +94,7 @@ public class PlayBoard : MonoBehaviour
             for (int j = 0; j < 8; j++)
             {
                 cellUI[i, j].GetComponent<Cell>().Piece = boardStack.Peek().BoardCells[i, j];
+                cellUI[i, j].GetComponentInChildren<Piece>().UpdatePiece(boardStack.Peek().BoardCells[i, j]);
             }
         }
     }
@@ -108,14 +109,14 @@ public class PlayBoard : MonoBehaviour
     public void InitUIBoard()
     {
         cellUI = new GameObject[8, 8];
-        Vector2 relativeCreatePos = new Vector2(0, 0);
+        Vector2Int relativeCreatePos = new Vector2Int(0, 0);
 
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                relativeCreatePos.x = i * cellSize;
-                relativeCreatePos.y = j * cellSize;
+                relativeCreatePos.x = i * (int)cellSize;
+                relativeCreatePos.y = j * (int)cellSize;
                 Vector3 createPos = transform.position + new Vector3(relativeCreatePos.x, relativeCreatePos.y, 0f);
                 if (i % 2 == 0)
                 {
@@ -132,8 +133,9 @@ public class PlayBoard : MonoBehaviour
                         cellUI[i, j] = Instantiate(darkCellObject, createPos, transform.rotation);
                 }
 
-                cellUI[i, j].GetComponent<Cell>().Coor = new Vector2(i, j);
+                cellUI[i, j].GetComponent<Cell>().Coor = new Vector2Int(i, j);
                 cellUI[i, j].GetComponent<Cell>().Piece = boardStack.Peek().BoardCells[i, j];
+                cellUI[i, j].GetComponentInChildren<Piece>().UpdatePiece(boardStack.Peek().BoardCells[i, j]);
             }
         }
     }

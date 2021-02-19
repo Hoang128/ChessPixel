@@ -49,7 +49,7 @@ public static class GameEvaluation
                         case "P":   newEvaluation -= pawnVal; break;
                     }
 
-                    bool isWhite = RuleHandler.isWhitePiece(new Vector2(i, j), boardCell);
+                    bool isWhite = RuleHandler.isWhitePiece(new Vector2Int(i, j), boardCell);
                     if (isWhite)
                         newEvaluation += GameEvaluation.cellVal[i, j];
                     else

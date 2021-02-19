@@ -56,7 +56,7 @@ public class InputManager : MonoBehaviour
                 {
                     if (playBoard.GetComponent<PlayBoard>().StateName == "Board Choose Move")
                     {
-                        playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2(-1, -1);
+                        playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2Int(-1, -1);
                     }
                 }
 
@@ -88,7 +88,7 @@ public class InputManager : MonoBehaviour
         }
         else if (playBoard.GetComponent<PlayBoard>().StateName == "Board Choose Move")
         {
-            playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2(-1, -1);
+            playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2Int(-1, -1);
         }
     }
 
@@ -96,17 +96,17 @@ public class InputManager : MonoBehaviour
     {
         if (playBoard.GetComponent<PlayBoard>().WhiteTurn)
         {
-            if (playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2(-1, -1))
+            if (playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2Int(-1, -1))
             {
-                Vector2 move = mark.GetComponent<Mark>().Coor;
+                Vector2Int move = mark.GetComponent<Mark>().Coor;
                 playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace = move;
             }
         }
         else
         {
-            if (playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2(-1, -1))
+            if (playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2Int(-1, -1))
             {
-                Vector2 move = mark.GetComponent<Mark>().Coor;
+                Vector2Int move = mark.GetComponent<Mark>().Coor;
                 playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace = move;
             }
         }

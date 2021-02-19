@@ -6,61 +6,54 @@ public static class RuleHandler
 {
     public struct MoveList
     {
-        public Vector2 piecePlace;
-        public Queue<Vector2> movePlace;
+        public Vector2Int piecePlace;
+        public Queue<Vector2Int> movePlace;
     }
 
-    public static bool isWhitePiece(Vector2 point, string[,] boardCell)
+    public static bool isWhitePiece(Vector2Int point, string[,] boardCell)
     {
         int piecePlaceX = System.Convert.ToInt32(point.x);
         int piecePlaceY = System.Convert.ToInt32(point.y);
         return boardCell[piecePlaceX, piecePlaceY].Equals(boardCell[piecePlaceX, piecePlaceY].ToLower());
     }
 
-    public static Board movePiece(Vector2 piecePlace, Vector2 movePlace, Board board)
+    public static Board movePiece(Vector2Int piecePlace, Vector2Int movePlace, Board board)
     {
         Board newBoard = new Board(board);
-        int piecePlaceX = System.Convert.ToInt32(piecePlace.x);
-        int piecePlaceY = System.Convert.ToInt32(piecePlace.y);
-        int movePlaceX = System.Convert.ToInt32(movePlace.x);
-        int movePlaceY = System.Convert.ToInt32(movePlace.y);
-        string piece = newBoard.BoardCells[piecePlaceX, piecePlaceY];
-        newBoard.BoardCells[piecePlaceX, piecePlaceY] = "0";
-        newBoard.BoardCells[movePlaceX, movePlaceY] = piece;
+        string piece = newBoard.BoardCells[piecePlace.x, piecePlace.y];
+        newBoard.BoardCells[piecePlace.x, piecePlace.y] = "0";
+        newBoard.BoardCells[movePlace.x, movePlace.y] = piece;
         newBoard.Evaluation = GameEvaluation.caculateBoardEvaluation(newBoard.BoardCells);
 
         return newBoard;
     }
 
-    public static MoveList FindMove(Vector2 point, Board board, bool isWhite)
+    public static MoveList FindPieceMove(Vector2Int point, Board board, bool isWhite)
     {
         MoveList moveList = new MoveList();
-        moveList.movePlace = new Queue<Vector2>();
-
-        int pointX = System.Convert.ToInt32(point.x);
-        int pointY = System.Convert.ToInt32(point.y);
+        moveList.movePlace = new Queue<Vector2Int>();
 
         if (isWhite)
         {
-            switch (board.BoardCells[pointX, pointY])
+            switch (board.BoardCells[point.x, point.y])
                 {
-                    case "k": break;
-                    case "q": break;
-                    case "b": break;
+                    case "k":       moveList = FindKingMove(point, board); break;
+                    case "q":       moveList = FindQueenMove(point, board); break;
+                    case "b":       moveList = FindBishopMove(point, board); break;
                     case "kn":      moveList = FindKnightMove(point, board); break;
-                    case "r": break;
+                    case "r":       moveList = FindRookMove(point, board); break;
                     case "p":       moveList = FindPawnMove(point, board); break;
                 }
         }
         else
         {
-            switch (board.BoardCells[pointX, pointY])
+            switch (board.BoardCells[point.x, point.y])
                 {
-                    case "K": break;
-                    case "Q": break;
-                    case "B": break;
+                    case "K":       moveList = FindKingMove(point, board); break;
+                    case "Q":       moveList = FindQueenMove(point, board); break;
+                    case "B":       moveList = FindBishopMove(point, board); break;
                     case "KN":      moveList = FindKnightMove(point, board); break;
-                    case "R": break;
+                    case "R":       moveList = FindRookMove(point, board); break;
                     case "P":       moveList = FindPawnMove(point, board); break;
                 }
         }
@@ -68,96 +61,680 @@ public static class RuleHandler
         return moveList;
     }
 
-    public static MoveList FindRookMove(Vector2 point, Board board)
+    public static MoveList FindKingMove(Vector2Int point, Board board)
     {
         MoveList moveList = new MoveList();
-        moveList.movePlace = new Queue<Vector2>();
-
+        moveList.movePlace = new Queue<Vector2Int>();
         moveList.piecePlace = point;
-        int pointX = System.Convert.ToInt32(point.x);
-        int pointY = System.Convert.ToInt32(point.y);
+        bool isWhiteKing = isWhitePiece(point, board.BoardCells);
 
+        if (IsEnableToMove(point, point + new Vector2Int(1, 0), true, board))
+            if (!IsCheckedCell(point + new Vector2Int(1, 0), board, isWhiteKing))
+                moveList.movePlace.Enqueue(point + new Vector2Int(1, 0));
 
+        if (IsEnableToMove(point, point + new Vector2Int(-1, 0), true, board))
+            if (!IsCheckedCell(point + new Vector2Int(-1, 0), board, isWhiteKing))
+                moveList.movePlace.Enqueue(point + new Vector2Int(-1, 0));
+
+        if (IsEnableToMove(point, point + new Vector2Int(0, 1), true, board))
+            if (!IsCheckedCell(point + new Vector2Int(0, 1), board, isWhiteKing))
+                moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
+
+        if (IsEnableToMove(point, point + new Vector2Int(0, -1), true, board))
+            if (!IsCheckedCell(point + new Vector2Int(0, -1), board, isWhiteKing))
+                moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
+
+        if (IsEnableToMove(point, point + new Vector2Int(1, 1), true, board))
+            if (!IsCheckedCell(point + new Vector2Int(1, 1), board, isWhiteKing))
+                moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
+
+        if (IsEnableToMove(point, point + new Vector2Int(-1, 1), true, board))
+            if (!IsCheckedCell(point + new Vector2Int(-1, 1), board, isWhiteKing))
+                moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
+
+        if (IsEnableToMove(point, point + new Vector2Int(-1, -1), true, board))
+            if (!IsCheckedCell(point + new Vector2Int(-1, -1), board, isWhiteKing))
+                moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
+
+        if (IsEnableToMove(point, point + new Vector2Int(1, -1), true, board))
+            if (!IsCheckedCell(point + new Vector2Int(1, -1), board, isWhiteKing))
+                moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
 
         return moveList;
     }
 
-    public static MoveList FindKnightMove(Vector2 point, Board board)
+    public static bool IsCheckedCell(Vector2Int point, Board board, bool IsWhiteKing)
+    {
+        if (IsWhiteKing)
+        {
+            //Horizontal & Vertical Lines
+            int hDir = 1;
+            for (int space = 1; space <= (7 - point.x); space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "R")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "Q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "k")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            hDir = -1;
+            for (int space = 1; space <= point.x; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "R")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "Q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "k")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            int vDir = 1;
+            for (int space = 1; space <= (7 - point.y); space++)
+            {
+                if (board.BoardCells[point.x, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "R")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "Q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "k")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            vDir = -1;
+            for (int space = 1; space <= point.y; space++)
+            {
+                if (board.BoardCells[point.x, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "R")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "Q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "k")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            //Cross Lines
+            hDir = 1;
+            vDir = 1;
+            int spaceLimit = Mathf.Min(7 - point.x, 7 - point.y);
+            for (int space = 1; space <= spaceLimit; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "B")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "Q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "k")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            hDir = -1;
+            vDir = 1;
+            spaceLimit = Mathf.Min(point.x, 7 - point.y);
+            for (int space = 1; space <= spaceLimit; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "B")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "Q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "k")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            hDir = 1;
+            vDir = -1;
+            spaceLimit = Mathf.Min(7 - point.x, point.y);
+            for (int space = 1; space <= spaceLimit; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "B")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "Q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "k")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            hDir = -1;
+            vDir = -1;
+            spaceLimit = Mathf.Min(point.x, point.y);
+            for (int space = 1; space <= spaceLimit; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "B")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "Q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "k")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            //L Shapes
+            if (((point.x + 2) <= 7) && ((point.y + 1) <= 7) && (board.BoardCells[point.x + 2, point.y + 1] == "KN"))
+                return true;
+            if (((point.x + 1) <= 7) && ((point.y + 2) <= 7) && (board.BoardCells[point.x + 1, point.y + 2] == "KN"))
+                return true;
+
+            if (((point.x + 2) <= 7) && ((point.y - 1) >= 0) && (board.BoardCells[point.x + 2, point.y - 1] == "KN"))
+                return true;
+            if (((point.x + 1) <= 7) && ((point.y - 2) >= 0) && (board.BoardCells[point.x + 1, point.y - 2] == "KN"))
+                return true;
+
+            if (((point.x - 2) >= 0) && ((point.y + 1) <= 7) && (board.BoardCells[point.x - 2, point.y + 1] == "KN"))
+                return true;
+            if (((point.x - 1) >= 0) && ((point.y + 2) <= 7) && (board.BoardCells[point.x - 1, point.y + 2] == "KN"))
+                return true;
+
+            if (((point.x - 2) >= 0) && ((point.y - 1) >= 0) && (board.BoardCells[point.x - 2, point.y - 1] == "KN"))
+                return true;
+            if (((point.x - 1) >= 0) && ((point.y - 2) >= 0) && (board.BoardCells[point.x - 1, point.y - 2] == "KN"))
+                return true;
+
+            //Pawn check
+            if (((point.x - 1) >= 0) && ((point.y + 1) <= 7) && board.BoardCells[point.x - 1, point.y + 1] == "P")
+                return true;
+            if (((point.x + 1) >= 0) && ((point.y + 1) <= 7) && board.BoardCells[point.x + 1, point.y + 1] == "P")
+                return true;
+
+        }
+        else
+        {
+            //Horizontal & Vertical Lines
+            int hDir = 1;
+            for (int space = 1; space <= (7 - point.x); space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "r")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "K")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            hDir = -1;
+            for (int space = 1; space <= point.x; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "r")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y] == "K")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            int vDir = 1;
+            for (int space = 1; space <= (7 - point.y); space++)
+            {
+                if (board.BoardCells[point.x, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "r")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "K")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            vDir = -1;
+            for (int space = 1; space <= point.y; space++)
+            {
+                if (board.BoardCells[point.x, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "r")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x, point.y + vDir * space] == "K")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            //Cross Lines
+            hDir = 1;
+            vDir = 1;
+            int spaceLimit = Mathf.Min(7 - point.x, 7 - point.y);
+            for (int space = 1; space <= spaceLimit; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "b")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "K")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            hDir = -1;
+            vDir = 1;
+            spaceLimit = Mathf.Min(point.x, 7 - point.y);
+            for (int space = 1; space <= spaceLimit; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "b")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "K")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            hDir = 1;
+            vDir = -1;
+            spaceLimit = Mathf.Min(7 - point.x, point.y);
+            for (int space = 1; space <= spaceLimit; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "b")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "K")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            hDir = -1;
+            vDir = -1;
+            spaceLimit = Mathf.Min(point.x, point.y);
+            for (int space = 1; space <= spaceLimit; space++)
+            {
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "0") continue;
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "b")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "q")
+                {
+                    return true;
+                }
+                else if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] == "K")
+                {
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            //L Shapes
+            if (((point.x + 2) <= 7) && ((point.y + 1) <= 7) && (board.BoardCells[point.x + 2, point.y + 1] == "kn"))
+                return true;
+            if (((point.x + 1) <= 7) && ((point.y + 2) <= 7) && (board.BoardCells[point.x + 1, point.y + 2] == "kn"))
+                return true;
+
+            if (((point.x + 2) <= 7) && ((point.y - 1) >= 0) && (board.BoardCells[point.x + 2, point.y - 1] == "kn"))
+                return true;
+            if (((point.x + 1) <= 7) && ((point.y - 2) >= 0) && (board.BoardCells[point.x + 1, point.y - 2] == "kn"))
+                return true;
+
+            if (((point.x - 2) >= 0) && ((point.y + 1) <= 7) && (board.BoardCells[point.x - 2, point.y + 1] == "kn"))
+                return true;
+            if (((point.x - 1) >= 0) && ((point.y + 2) <= 7) && (board.BoardCells[point.x - 1, point.y + 2] == "kn"))
+                return true;
+
+            if (((point.x - 2) >= 0) && ((point.y - 1) >= 0) && (board.BoardCells[point.x - 2, point.y - 1] == "kn"))
+                return true;
+            if (((point.x - 1) >= 0) && ((point.y - 2) >= 0) && (board.BoardCells[point.x - 1, point.y - 2] == "kn"))
+                return true;
+
+            //Pawn check
+            if (((point.x - 1) >= 0) && ((point.y - 1) >= 0) && board.BoardCells[point.x - 1, point.y - 1] == "p")
+                return true;
+            if (((point.x + 1) >= 0) && ((point.y - 1) >= 0) && board.BoardCells[point.x + 1, point.y - 1] == "p")
+                return true;
+        }
+
+        return false;
+    }
+
+    public static MoveList FindQueenMove(Vector2Int point, Board board)
     {
         MoveList moveList = new MoveList();
-        moveList.movePlace = new Queue<Vector2>();
-
+        moveList.movePlace = new Queue<Vector2Int>();
         moveList.piecePlace = point;
-        int pointX = System.Convert.ToInt32(point.x);
-        int pointY = System.Convert.ToInt32(point.y);
 
-        if ((((pointX - 1) >= 0) && (pointY - 2) >= 0) && (board.BoardCells[pointX - 1, pointY - 2] == "0"))
-            moveList.movePlace.Enqueue(new Vector2(pointX - 1, pointY - 2));
-        if ((((pointX + 1) <= 7) && (pointY - 2) >= 0) && (board.BoardCells[pointX + 1, pointY - 2] == "0"))
-            moveList.movePlace.Enqueue(new Vector2(pointX + 1, pointY - 2));
-        if ((((pointX - 1) >= 0) && (pointY + 2) <= 7) && (board.BoardCells[pointX - 1, pointY + 2] == "0"))
-            moveList.movePlace.Enqueue(new Vector2(pointX - 1, pointY + 2));
-        if ((((pointX + 1) <= 7) && (pointY + 2) <= 7) && (board.BoardCells[pointX + 1, pointY + 2] == "0"))
-            moveList.movePlace.Enqueue(new Vector2(pointX + 1, pointY + 2));
+        MoveList tempMoveList = new MoveList();
+        tempMoveList.movePlace = new Queue<Vector2Int>();
+        tempMoveList = FindBishopMove(point, board);
+        foreach(Vector2Int movePlace in tempMoveList.movePlace)
+        {
+            moveList.movePlace.Enqueue(movePlace);
+        }
 
-        if ((((pointX - 2) >= 0) && (pointY - 1) >= 0) && (board.BoardCells[pointX - 2, pointY - 1] == "0"))
-            moveList.movePlace.Enqueue(new Vector2(pointX - 2, pointY - 1));
-        if ((((pointX + 2) <= 7) && (pointY - 1) >= 0) && (board.BoardCells[pointX + 2, pointY - 1] == "0"))
-            moveList.movePlace.Enqueue(new Vector2(pointX + 2, pointY - 1));
-        if ((((pointX - 2) >= 0) && (pointY + 1) <= 7) && (board.BoardCells[pointX - 2, pointY + 1] == "0"))
-            moveList.movePlace.Enqueue(new Vector2(pointX - 2, pointY + 1));
-        if ((((pointX + 2) <= 7) && (pointY + 1) <= 7) && (board.BoardCells[pointX + 2, pointY + 1] == "0"))
-            moveList.movePlace.Enqueue(new Vector2(pointX + 2, pointY + 1));
+        tempMoveList.movePlace.Clear();
+
+        tempMoveList = FindRookMove(point, board);
+        foreach (Vector2Int movePlace in tempMoveList.movePlace)
+        {
+            moveList.movePlace.Enqueue(movePlace);
+        }
 
         return moveList;
     }
 
-    public static MoveList FindPawnMove(Vector2 point, Board board)
+    public static MoveList FindRookMove(Vector2Int point, Board board)
     {
         MoveList moveList = new MoveList();
-        moveList.movePlace = new Queue<Vector2>();
+        moveList.movePlace = new Queue<Vector2Int>();
 
         moveList.piecePlace = point;
-        int pointX = System.Convert.ToInt32(point.x);
-        int pointY = System.Convert.ToInt32(point.y);
+        int hDir = 1;
+        int space = 1;
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), true,board))
+        {
+            moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, 0));
+            if (board.BoardCells[point.x + hDir * space, point.y] != "0")
+                break;
+            space++;
+        }
 
-        switch (board.BoardCells[pointX, pointY])
+        hDir = -1;
+        space = 1;
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), true, board))
+        {
+            moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, 0));
+            if (board.BoardCells[point.x + hDir * space, point.y] != "0")
+                break;
+            space++;
+        }
+
+        int vDir = 1;
+        space = 1;
+        while (IsEnableToMove(point, point + new Vector2Int(0, vDir * space), true, board))
+        {
+            moveList.movePlace.Enqueue(point + new Vector2Int(0, vDir * space));
+            if (board.BoardCells[point.x, point.y + vDir * space] != "0")
+                break;
+            space++;
+        }
+
+        vDir = -1;
+        space = 1;
+        while (IsEnableToMove(point, point + new Vector2Int(0, vDir * space), true, board))
+        {
+            moveList.movePlace.Enqueue(point + new Vector2Int(0, vDir * space));
+            if (board.BoardCells[point.x, point.y + vDir * space] != "0")
+                break;
+            space++;
+        }
+        return moveList;
+    }
+
+    public static MoveList FindBishopMove(Vector2Int point, Board board)
+    {
+        MoveList moveList = new MoveList();
+        moveList.movePlace = new Queue<Vector2Int>();
+
+        moveList.piecePlace = point;
+
+        int hDir = 1;
+        int vDir = 1;
+        int space = 1;
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), true, board))
+        {
+            moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, vDir * space));
+            if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
+                break;
+            space++;
+        }
+
+        hDir = -1;
+        vDir = 1;
+        space = 1;
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), true, board))
+        {
+            moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, vDir * space));
+            if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
+                break;
+            space++;
+        }
+
+        hDir = 1;
+        vDir = -1;
+        space = 1;
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), true, board))
+        {
+            moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, vDir * space));
+            if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
+                break;
+            space++;
+        }
+
+        hDir = -1;
+        vDir = -1;
+        space = 1;
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), true, board))
+        {
+            moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, vDir * space));
+            if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
+                break;
+            space++;
+        }
+
+        return moveList;
+    }
+
+    public static MoveList FindKnightMove(Vector2Int point, Board board)
+    {
+        MoveList moveList = new MoveList();
+        moveList.movePlace = new Queue<Vector2Int>();
+
+        moveList.piecePlace = point;
+
+        if (IsEnableToMove(point, point + new Vector2Int(-1, -2), true, board))
+            moveList.movePlace.Enqueue(point + new Vector2Int(-1, -2));
+
+        if (IsEnableToMove(point, point + new Vector2Int(+1, -2), true, board))
+            moveList.movePlace.Enqueue(point + new Vector2Int(+1, -2));
+
+        if (IsEnableToMove(point, point + new Vector2Int(+1, +2), true, board))
+            moveList.movePlace.Enqueue(point + new Vector2Int(+1, +2));
+
+        if (IsEnableToMove(point, point + new Vector2Int(-1, +2), true, board))
+            moveList.movePlace.Enqueue(point + new Vector2Int(-1, +2));
+
+        if (IsEnableToMove(point, point + new Vector2Int(-2, -1), true, board))
+            moveList.movePlace.Enqueue(point + new Vector2Int(-2, -1));
+
+        if (IsEnableToMove(point, point + new Vector2Int(+2, -1), true, board))
+            moveList.movePlace.Enqueue(point + new Vector2Int(+2, -1));
+
+        if (IsEnableToMove(point, point + new Vector2Int(+2, +1), true, board))
+            moveList.movePlace.Enqueue(point + new Vector2Int(+2, +1));
+
+        if (IsEnableToMove(point, point + new Vector2Int(-2, +1), true, board))
+            moveList.movePlace.Enqueue(point + new Vector2Int(-2, +1));
+
+        return moveList;
+    }
+
+    public static MoveList FindPawnMove(Vector2Int point, Board board)
+    {
+        MoveList moveList = new MoveList();
+        moveList.movePlace = new Queue<Vector2Int>();
+
+        moveList.piecePlace = point;
+
+        switch (board.BoardCells[point.x, point.y])
         {
             //White Side
             case "p":
                 {
                     //Move
-                    if (pointY == 1)
+                    if (point.y == 1)
                     {
-                        if (board.BoardCells[pointX, 3] == "0")
-                        {
-                            moveList.movePlace.Enqueue(new Vector2 (pointX, 3));
-                        }
+                        if (IsEnableToMove(point, new Vector2Int(point.x, 3), false, board))
+                            moveList.movePlace.Enqueue(new Vector2Int (point.x, 3));
                     }
-                    if (pointY < 7)
-                    {
-                        if (board.BoardCells[pointX, pointY + 1] == "0")
-                        {
-                            moveList.movePlace.Enqueue(new Vector2(pointX, pointY + 1));
-                        }
-                    }
+
+                    if (IsEnableToMove(point, point + new Vector2Int(0, 1), false, board))
+                        moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
 
                     //Capture
-                    if (pointX > 0)
-                    {
-                        if (board.BoardCells[pointX - 1, pointY + 1] != "0")
+                    if (IsEnableToMove(point, point + new Vector2Int(-1, 1), true, board))
+                        if (board.BoardCells[point.x - 1, point.y + 1] != "0")
                         {
-                            moveList.movePlace.Enqueue(new Vector2(pointX - 1, pointY + 1));
+                            moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
                         }
-                    }
 
-                    if (pointX < 7)
-                    {
-                        if (board.BoardCells[pointX + 1, pointY + 1] != "0")
+                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), true, board))
+                        if (board.BoardCells[point.x + 1, point.y + 1] != "0")
                         {
-                            moveList.movePlace.Enqueue(new Vector2(pointX + 1, pointY + 1));
+                            moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
                         }
-                    }
                 }   break;
 
             //Black Side
@@ -166,38 +743,90 @@ public static class RuleHandler
                     //Move
                     if (point.y == 6)
                     {
-                        if (board.BoardCells[pointX, 4] == "0")
-                        {
-                            moveList.movePlace.Enqueue(new Vector2(pointX, 4));
-                        }
+                        if (IsEnableToMove(point, new Vector2Int(point.x, 4), false, board))
+                            moveList.movePlace.Enqueue(new Vector2Int(point.x, 4));
                     }
-                    if (point.y > 0)
-                    {
-                        if (board.BoardCells[pointX, pointY - 1] == "0")
-                        {
-                            moveList.movePlace.Enqueue(new Vector2(pointX, pointY - 1));
-                        }
-                    }
+
+                    if (IsEnableToMove(point, point + new Vector2Int(0, -1), false, board))
+                        moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
 
                     //Capture
-                    if (point.x > 0)
-                    {
-                        if (board.BoardCells[pointX - 1, pointY - 1] != "0")
+                    if (IsEnableToMove(point, point + new Vector2Int(-1, -1), true, board))
+                        if (board.BoardCells[point.x - 1, point.y - 1] != "0")
                         {
-                            moveList.movePlace.Enqueue(new Vector2(pointX - 1, pointY - 1));
+                            moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
                         }
-                    }
 
-                    if (point.x < 7)
-                    {
-                        if (board.BoardCells[pointX + 1, pointY - 1] != "0")
+                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), true, board))
+                        if (board.BoardCells[point.x + 1, point.y - 1] != "0")
                         {
-                            moveList.movePlace.Enqueue(new Vector2(pointX + 1, pointY - 1));
+                            moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
                         }
-                    }
                 }   break;
         }
 
         return moveList;
+    }
+
+    public static bool IsEnableToMove(Vector2Int piecePlace, Vector2Int newPlace, bool isCaptureMove, Board board)
+    {
+        bool canMove = false;
+        bool whitePiece = isWhitePiece(piecePlace, board.BoardCells);
+        if ((newPlace.x >= 0) && (newPlace.x <= 7) && (newPlace.y >= 0) && (newPlace.y <= 7))
+        {
+            if ((board.BoardCells[newPlace.x, newPlace.y] == "0"))
+                canMove = true;
+            else
+            {
+                if (isCaptureMove)
+                {
+                    bool otherWhite = isWhitePiece(new Vector2Int(newPlace.x, newPlace.y), board.BoardCells);
+                    if (whitePiece != otherWhite)
+                        canMove = true;
+                }
+            }
+        }
+
+        //Check if the move is not a self-destruction _(:3JZ)_
+        if (canMove)
+        {
+            Board newBoard = new Board(movePiece(piecePlace, newPlace, board));
+            board.Log();
+            newBoard.Log();
+            if (whitePiece)
+            {
+                for (int i = 0; i <= 7; i++)
+                {
+                    for (int j = 0; j <= 7; j++)
+                    {
+                        if (newBoard.BoardCells[i, j] == "k")
+                        {
+                            if (IsCheckedCell(new Vector2Int(i, j), newBoard, whitePiece))
+                            {
+                                canMove = false;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i <= 7; i++)
+                {
+                    for (int j = 0; j <= 7; j++)
+                    {
+                        if (newBoard.BoardCells[i, j] == "K")
+                        {
+                            if (IsCheckedCell(new Vector2Int(i, j), newBoard, whitePiece))
+                            {
+                                canMove = false;
+                            }
+                        }
+                    }
+                }
+            }
+        }    
+
+        return canMove;
     }
 }

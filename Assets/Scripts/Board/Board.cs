@@ -52,13 +52,26 @@ public class Board
     public Board(Board newBoard)
     {
         evaluation = newBoard.evaluation;
-        boardCell = newBoard.boardCell;
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                boardCell[i, j] = newBoard.boardCell[i, j];
+            }
+        }
     }
 
     public Board(int newEvaluation, string[,] newBoardCells)
     {
         evaluation = newEvaluation;
-        boardCell = newBoardCells;
+
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                boardCell[i, j] = newBoardCells[i, j];
+            }
+        }
     }
 
     public void Log()

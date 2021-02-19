@@ -14,10 +14,10 @@ public class BoardStateIdle : BoardState
     {
         Debug.Log("Entered Board State Idle!");
 
-        boardController.GetComponent<PlayBoard>().ClickPoint = new Vector2(-1, -1);
+        boardController.GetComponent<PlayBoard>().ClickPoint = new Vector2Int(-1, -1);
         boardController.GetComponent<PlayBoard>().StateName = "Board Idle";
-        boardController.PlayerBlack.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2(-1, -1);
-        boardController.PlayerWhite.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2(-1, -1);
+        boardController.PlayerBlack.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
+        boardController.PlayerWhite.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
     }
 
     public override void OnExit()
@@ -27,7 +27,7 @@ public class BoardStateIdle : BoardState
 
     public override void OnUpdate()
     {
-        if (boardController.ClickPoint != new Vector2(-1, -1))
+        if (boardController.ClickPoint != new Vector2Int(-1, -1))
         {
             stateMachine.StateChange(new BoardStateChooseMove(stateMachine, boardController));
         }

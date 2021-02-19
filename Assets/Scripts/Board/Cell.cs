@@ -8,12 +8,12 @@ public class Cell : MonoBehaviour
 
     GameObject playBoard;
 
-    Vector2 coor;
+    Vector2Int coor;
     string piece;
     BoxCollider2D boxCol2D;
 
     public string Piece { get => piece; set => piece = value; }
-    public Vector2 Coor { get => coor; set => coor = value; }
+    public Vector2Int Coor { get => coor; set => coor = value; }
 
     // Start is called before the first frame update
     void Awake()

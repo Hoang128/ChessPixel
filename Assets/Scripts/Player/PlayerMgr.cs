@@ -5,10 +5,10 @@ using UnityEngine;
 public class PlayerMgr : MonoBehaviour
 {
     bool isWhite = true;
-    Vector2 finalMovePlace = new Vector2(-1, -1);
+    Vector2Int finalMovePlace = new Vector2Int(-1, -1);
 
     public bool IsWhite { get => isWhite; set => isWhite = value; }
-    public Vector2 FinalMovePlace { get => finalMovePlace; set => finalMovePlace = value; }
+    public Vector2Int FinalMovePlace { get => finalMovePlace; set => finalMovePlace = value; }
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +22,7 @@ public class PlayerMgr : MonoBehaviour
         
     }
 
-    public Board Move(Vector2 piecePlace, Vector2 movePlace, Board board)
+    public Board Move(Vector2Int piecePlace, Vector2Int movePlace, Board board)
     {
         return (RuleHandler.movePiece(piecePlace, movePlace, board));
     }
