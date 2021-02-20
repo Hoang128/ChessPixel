@@ -60,7 +60,8 @@ public class PlayBoard : MonoBehaviour
             { "r" , "p", "0", "0", "0", "0", "P", "R" }
         };
 
-        Board startBoard = new Board(0, startCell);
+        Board startBoard = new Board();
+        startBoard.BoardCells = startCell;
 
         UpdatePlayBoard(startBoard);
         UpdateUIBoard();

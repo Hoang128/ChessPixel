@@ -8,8 +8,10 @@ public class Board
 {
     long evaluation;
     string[,] boardCell = new string[8, 8];
-    bool canNCastling = true;
-    bool canFCastling = true;
+    bool blackCanNCastling = true;
+    bool blackCanFCastling = true;
+    bool whiteCanNCastling = true;
+    bool whiteCanFCastling = true;
     /*
      * Cell assign:
      * white side: Normal characters
@@ -34,19 +36,11 @@ public class Board
                 boardCell[i, j] = "0";
             }
         }
-    }
 
-    public Board(string[, ] newBoardCell)
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                boardCell[i, j] = newBoardCell[i, j];
-            }
-        }
-
-        evaluation = GameEvaluation.caculateBoardEvaluation(boardCell);
+        blackCanNCastling = true;
+        blackCanFCastling = true;
+        whiteCanNCastling = true;
+        whiteCanFCastling = true;
     }
 
     public Board(Board newBoard)
@@ -59,19 +53,11 @@ public class Board
                 boardCell[i, j] = newBoard.boardCell[i, j];
             }
         }
-    }
 
-    public Board(int newEvaluation, string[,] newBoardCells)
-    {
-        evaluation = newEvaluation;
-
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                boardCell[i, j] = newBoardCells[i, j];
-            }
-        }
+        blackCanNCastling = newBoard.blackCanNCastling;
+        blackCanFCastling = newBoard.blackCanFCastling;
+        whiteCanNCastling = newBoard.whiteCanNCastling;
+        whiteCanFCastling = newBoard.whiteCanFCastling;
     }
 
     public void Log()
@@ -100,6 +86,8 @@ public class Board
 
     public long Evaluation { get => evaluation; set => evaluation = value; }
     public string[,] BoardCells { get => boardCell; set => boardCell = value; }
-    public bool CanNCastling { get => canNCastling; set => canNCastling = value; }
-    public bool CanFCastling { get => canFCastling; set => canFCastling = value; }
+    public bool BlackCanNCastling { get => blackCanNCastling; set => blackCanNCastling = value; }
+    public bool BlackCanFCastling { get => blackCanFCastling; set => blackCanFCastling = value; }
+    public bool WhiteCanNCastling { get => whiteCanNCastling; set => whiteCanNCastling = value; }
+    public bool WhiteCanFCastling { get => whiteCanFCastling; set => whiteCanFCastling = value; }
 }

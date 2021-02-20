@@ -4,6 +4,12 @@ using UnityEngine;
 
 public static class RuleHandler
 {
+    public enum MoveType
+    {
+        NORMAL,
+        CASTLING,
+        PROMO
+    };
     public struct MoveList
     {
         public Vector2Int piecePlace;
@@ -21,6 +27,52 @@ public static class RuleHandler
     {
         Board newBoard = new Board(board);
         string piece = newBoard.BoardCells[piecePlace.x, piecePlace.y];
+        if ((piece == "K") || (piece == "k"))
+        {
+            if ((movePlace.x - piecePlace.x) == 2)
+            {
+                newBoard.BoardCells[7, piecePlace.y] = "0";
+                if (piece == "K")
+                    newBoard.BoardCells[5, piecePlace.y] = "R";
+                else
+                    newBoard.BoardCells[5, piecePlace.y] = "r";
+            }
+            else if ((movePlace.x - piecePlace.x) == -2)
+            {
+                newBoard.BoardCells[0, piecePlace.y] = "0";
+                if (piece == "K")
+                    newBoard.BoardCells[3, piecePlace.y] = "R";
+                else
+                    newBoard.BoardCells[3, piecePlace.y] = "r";
+            }
+
+            if (piece == "k")
+            {
+                newBoard.WhiteCanNCastling = false;
+                newBoard.WhiteCanFCastling = false;
+            }
+            else if (piece == "K")
+            {
+                newBoard.BlackCanNCastling = false;
+                newBoard.BlackCanFCastling = false;
+            }
+        }
+
+        if (piece == "r")
+        {
+            if ((piecePlace.x == 0) && (newBoard.WhiteCanFCastling == true))
+                newBoard.WhiteCanFCastling = false;
+            if ((piecePlace.x == 7) && (newBoard.WhiteCanNCastling == true))
+                newBoard.WhiteCanNCastling = false;
+        }
+        if (piece == "R")
+        {
+            if ((piecePlace.x == 0) && (newBoard.BlackCanFCastling == true))
+                newBoard.BlackCanFCastling = false;
+            if ((piecePlace.x == 7) && (newBoard.BlackCanNCastling == true))
+                newBoard.BlackCanNCastling = false;
+        }
+
         newBoard.BoardCells[piecePlace.x, piecePlace.y] = "0";
         newBoard.BoardCells[movePlace.x, movePlace.y] = piece;
         newBoard.Evaluation = GameEvaluation.caculateBoardEvaluation(newBoard.BoardCells);
@@ -99,6 +151,82 @@ public static class RuleHandler
         if (IsEnableToMove(point, point + new Vector2Int(1, -1), true, board))
             if (!IsCheckedCell(point + new Vector2Int(1, -1), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
+
+        if (isWhiteKing)
+        {
+            if (board.WhiteCanNCastling)
+            {
+                bool castlingMove = true;
+                for (int i = 1; i <= 2; i++)
+                {
+                    if (!IsEnableToMove(point, point + new Vector2Int(i, 0), false, board))
+                    {
+                        castlingMove = false;
+                        break;
+                    }
+                }
+                if (castlingMove)
+                {
+                    moveList.movePlace.Enqueue(point + new Vector2Int(2, 0));
+                }
+            }
+
+            if (board.WhiteCanFCastling)
+            {
+                bool castlingMove = true;
+                for (int i = 1; i <= 2; i++)
+                {
+                    if (!IsEnableToMove(point, point - new Vector2Int(i, 0), false, board))
+                    {
+                        castlingMove = false;
+                        break;
+                    }
+                }
+                if (board.BoardCells[point.x - 3, point.y] != "0")
+                    castlingMove = false;
+                if (castlingMove)
+                {
+                    moveList.movePlace.Enqueue(point - new Vector2Int(2, 0));
+                }
+            }
+        }
+        else
+        {
+            if (board.BlackCanNCastling)
+            {
+                bool castlingMove = true;
+                for (int i = 1; i <= 2; i++)
+                {
+                    if (!IsEnableToMove(point, point + new Vector2Int(i, 0), false, board))
+                    {
+                        castlingMove = false;
+                        break;
+                    }
+                }
+                if (castlingMove)
+                {
+                    moveList.movePlace.Enqueue(point + new Vector2Int(2, 0));
+                }
+            }
+            if (board.BlackCanFCastling)
+            {
+                bool castlingMove = true;
+                for (int i = 1; i <= 2; i++)
+                {
+                    if (!IsEnableToMove(point, point - new Vector2Int(i, 0), false, board))
+                    {
+                        castlingMove = false;
+                        break;
+                    }
+                }
+                if (board.BoardCells[point.x - 3, point.y] != "0")
+                    castlingMove = false;
+                if (castlingMove)
+                {
+                    moveList.movePlace.Enqueue(point - new Vector2Int(2, 0));
+                }
+            }
+        }
 
         return moveList;
     }
