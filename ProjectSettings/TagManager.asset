@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Cell
+  - Promo Marker
+  - Move Marker
+  - Capture Marker
   - Marker
   layers:
   - Default

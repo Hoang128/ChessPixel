@@ -365,6 +365,8 @@ MonoBehaviour:
   darkCellObject: {fileID: 6319443893158641036, guid: 2180a6d77c98fbf449213dab1fec0e19, type: 3}
   moveMarkObject: {fileID: 4136555737248255070, guid: 48d9b1b65db49b14f89b56557dc60189, type: 3}
   captureMarkObject: {fileID: 7658253087374125491, guid: 3d888bb1f76250341a45e7261e9fc6db, type: 3}
+  movePromoMarkObject: {fileID: 5208716086144950585, guid: 8edbcc51dc2549c41a7eb7d10b4f5754, type: 3}
+  capturePromoMarkObject: {fileID: 7238664853878211670, guid: 1b856161e03ddce4c87fe0fddf465e88, type: 3}
   playerWhite: {fileID: 4563212219635069427, guid: 3dd77e89405ff5947874c872bcdf8cae, type: 3}
   playerBlack: {fileID: 4563212219635069427, guid: 3dd77e89405ff5947874c872bcdf8cae, type: 3}
   cellSize: 5

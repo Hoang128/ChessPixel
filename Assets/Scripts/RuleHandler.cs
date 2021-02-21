@@ -14,6 +14,7 @@ public static class RuleHandler
     {
         public Vector2Int piecePlace;
         public Queue<Vector2Int> movePlace;
+        public Queue<string> pieceAfterMove;
     }
 
     public static bool isWhitePiece(Vector2Int point, string[,] boardCell)
@@ -23,7 +24,7 @@ public static class RuleHandler
         return boardCell[piecePlaceX, piecePlaceY].Equals(boardCell[piecePlaceX, piecePlaceY].ToLower());
     }
 
-    public static Board movePiece(Vector2Int piecePlace, Vector2Int movePlace, Board board)
+    public static Board MovePiece(Vector2Int piecePlace, Vector2Int movePlace, string newPiece, Board board)
     {
         Board newBoard = new Board(board);
         string piece = newBoard.BoardCells[piecePlace.x, piecePlace.y];
@@ -74,7 +75,10 @@ public static class RuleHandler
         }
 
         newBoard.BoardCells[piecePlace.x, piecePlace.y] = "0";
-        newBoard.BoardCells[movePlace.x, movePlace.y] = piece;
+        if (newPiece == "0")
+            newBoard.BoardCells[movePlace.x, movePlace.y] = piece;
+        else
+            newBoard.BoardCells[movePlace.x, movePlace.y] = newPiece;
         newBoard.Evaluation = GameEvaluation.caculateBoardEvaluation(newBoard.BoardCells);
 
         return newBoard;
@@ -84,6 +88,7 @@ public static class RuleHandler
     {
         MoveList moveList = new MoveList();
         moveList.movePlace = new Queue<Vector2Int>();
+        moveList.pieceAfterMove = new Queue<string>();
 
         if (isWhite)
         {
@@ -117,38 +122,39 @@ public static class RuleHandler
     {
         MoveList moveList = new MoveList();
         moveList.movePlace = new Queue<Vector2Int>();
+        moveList.pieceAfterMove = new Queue<string>();
         moveList.piecePlace = point;
         bool isWhiteKing = isWhitePiece(point, board.BoardCells);
 
-        if (IsEnableToMove(point, point + new Vector2Int(1, 0), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(1, 0), "0", true, board))
             if (!IsCheckedCell(point + new Vector2Int(1, 0), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(1, 0));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, 0), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, 0), "0", true, board))
             if (!IsCheckedCell(point + new Vector2Int(-1, 0), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(-1, 0));
 
-        if (IsEnableToMove(point, point + new Vector2Int(0, 1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(0, 1), "0", true, board))
             if (!IsCheckedCell(point + new Vector2Int(0, 1), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(0, -1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(0, -1), "0", true, board))
             if (!IsCheckedCell(point + new Vector2Int(0, -1), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(1, 1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board))
             if (!IsCheckedCell(point + new Vector2Int(1, 1), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, 1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, 1), "0", true, board))
             if (!IsCheckedCell(point + new Vector2Int(-1, 1), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, -1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, -1), "0", true, board))
             if (!IsCheckedCell(point + new Vector2Int(-1, -1), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(1, -1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(1, -1), "0", true, board))
             if (!IsCheckedCell(point + new Vector2Int(1, -1), board, isWhiteKing))
                 moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
 
@@ -159,7 +165,7 @@ public static class RuleHandler
                 bool castlingMove = true;
                 for (int i = 1; i <= 2; i++)
                 {
-                    if (!IsEnableToMove(point, point + new Vector2Int(i, 0), false, board))
+                    if (!IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board))
                     {
                         castlingMove = false;
                         break;
@@ -176,7 +182,7 @@ public static class RuleHandler
                 bool castlingMove = true;
                 for (int i = 1; i <= 2; i++)
                 {
-                    if (!IsEnableToMove(point, point - new Vector2Int(i, 0), false, board))
+                    if (!IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board))
                     {
                         castlingMove = false;
                         break;
@@ -197,7 +203,7 @@ public static class RuleHandler
                 bool castlingMove = true;
                 for (int i = 1; i <= 2; i++)
                 {
-                    if (!IsEnableToMove(point, point + new Vector2Int(i, 0), false, board))
+                    if (!IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board))
                     {
                         castlingMove = false;
                         break;
@@ -213,7 +219,7 @@ public static class RuleHandler
                 bool castlingMove = true;
                 for (int i = 1; i <= 2; i++)
                 {
-                    if (!IsEnableToMove(point, point - new Vector2Int(i, 0), false, board))
+                    if (!IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board))
                     {
                         castlingMove = false;
                         break;
@@ -672,6 +678,7 @@ public static class RuleHandler
     {
         MoveList moveList = new MoveList();
         moveList.movePlace = new Queue<Vector2Int>();
+        moveList.pieceAfterMove = new Queue<string>();
         moveList.piecePlace = point;
 
         MoveList tempMoveList = new MoveList();
@@ -697,11 +704,12 @@ public static class RuleHandler
     {
         MoveList moveList = new MoveList();
         moveList.movePlace = new Queue<Vector2Int>();
+        moveList.pieceAfterMove = new Queue<string>();
 
         moveList.piecePlace = point;
         int hDir = 1;
         int space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), true,board))
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), "0", true,board))
         {
             moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, 0));
             if (board.BoardCells[point.x + hDir * space, point.y] != "0")
@@ -711,7 +719,7 @@ public static class RuleHandler
 
         hDir = -1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), true, board))
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), "0", true, board))
         {
             moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, 0));
             if (board.BoardCells[point.x + hDir * space, point.y] != "0")
@@ -721,7 +729,7 @@ public static class RuleHandler
 
         int vDir = 1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(0, vDir * space), true, board))
+        while (IsEnableToMove(point, point + new Vector2Int(0, vDir * space), "0", true, board))
         {
             moveList.movePlace.Enqueue(point + new Vector2Int(0, vDir * space));
             if (board.BoardCells[point.x, point.y + vDir * space] != "0")
@@ -731,7 +739,7 @@ public static class RuleHandler
 
         vDir = -1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(0, vDir * space), true, board))
+        while (IsEnableToMove(point, point + new Vector2Int(0, vDir * space), "0", true, board))
         {
             moveList.movePlace.Enqueue(point + new Vector2Int(0, vDir * space));
             if (board.BoardCells[point.x, point.y + vDir * space] != "0")
@@ -745,13 +753,14 @@ public static class RuleHandler
     {
         MoveList moveList = new MoveList();
         moveList.movePlace = new Queue<Vector2Int>();
+        moveList.pieceAfterMove = new Queue<string>();
 
         moveList.piecePlace = point;
 
         int hDir = 1;
         int vDir = 1;
         int space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), true, board))
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board))
         {
             moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, vDir * space));
             if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
@@ -762,7 +771,7 @@ public static class RuleHandler
         hDir = -1;
         vDir = 1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), true, board))
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board))
         {
             moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, vDir * space));
             if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
@@ -773,7 +782,7 @@ public static class RuleHandler
         hDir = 1;
         vDir = -1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), true, board))
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board))
         {
             moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, vDir * space));
             if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
@@ -784,7 +793,7 @@ public static class RuleHandler
         hDir = -1;
         vDir = -1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), true, board))
+        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board))
         {
             moveList.movePlace.Enqueue(point + new Vector2Int(hDir * space, vDir * space));
             if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
@@ -799,31 +808,32 @@ public static class RuleHandler
     {
         MoveList moveList = new MoveList();
         moveList.movePlace = new Queue<Vector2Int>();
+        moveList.pieceAfterMove = new Queue<string>();
 
         moveList.piecePlace = point;
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, -2), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, -2), "0", true, board))
             moveList.movePlace.Enqueue(point + new Vector2Int(-1, -2));
 
-        if (IsEnableToMove(point, point + new Vector2Int(+1, -2), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(+1, -2), "0", true, board))
             moveList.movePlace.Enqueue(point + new Vector2Int(+1, -2));
 
-        if (IsEnableToMove(point, point + new Vector2Int(+1, +2), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(+1, +2), "0", true, board))
             moveList.movePlace.Enqueue(point + new Vector2Int(+1, +2));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, +2), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, +2), "0", true, board))
             moveList.movePlace.Enqueue(point + new Vector2Int(-1, +2));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-2, -1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-2, -1), "0", true, board))
             moveList.movePlace.Enqueue(point + new Vector2Int(-2, -1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(+2, -1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(+2, -1), "0", true, board))
             moveList.movePlace.Enqueue(point + new Vector2Int(+2, -1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(+2, +1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(+2, +1), "0", true, board))
             moveList.movePlace.Enqueue(point + new Vector2Int(+2, +1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-2, +1), true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-2, +1), "0", true, board))
             moveList.movePlace.Enqueue(point + new Vector2Int(-2, +1));
 
         return moveList;
@@ -833,6 +843,7 @@ public static class RuleHandler
     {
         MoveList moveList = new MoveList();
         moveList.movePlace = new Queue<Vector2Int>();
+        moveList.pieceAfterMove = new Queue<string>();
 
         moveList.piecePlace = point;
 
@@ -844,25 +855,67 @@ public static class RuleHandler
                     //Move
                     if (point.y == 1)
                     {
-                        if (IsEnableToMove(point, new Vector2Int(point.x, 3), false, board))
-                            moveList.movePlace.Enqueue(new Vector2Int (point.x, 3));
+                        if (IsEnableToMove(point, new Vector2Int(point.x, 3), "0", false, board))
+                            moveList.movePlace.Enqueue(new Vector2Int(point.x, 3));
                     }
 
-                    if (IsEnableToMove(point, point + new Vector2Int(0, 1), false, board))
-                        moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
+                    if (IsEnableToMove(point, point + new Vector2Int(0, 1), "0", false, board))
+                    {
+                        if (point.y < 6)
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
+                        if (point.y == 6)
+                        {
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
+                            moveList.pieceAfterMove.Enqueue("q");
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
+                            moveList.pieceAfterMove.Enqueue("r");
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
+                            moveList.pieceAfterMove.Enqueue("b");
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, 1));
+                            moveList.pieceAfterMove.Enqueue("kn");
+                        }
+                    }
 
                     //Capture
-                    if (IsEnableToMove(point, point + new Vector2Int(-1, 1), true, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(-1, 1), "0", true, board))
+                    {
                         if (board.BoardCells[point.x - 1, point.y + 1] != "0")
                         {
-                            moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
+                            if (point.y < 6)
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
+                            if (point.y == 6)
+                            {
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
+                                moveList.pieceAfterMove.Enqueue("q");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
+                                moveList.pieceAfterMove.Enqueue("r");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
+                                moveList.pieceAfterMove.Enqueue("b");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, 1));
+                                moveList.pieceAfterMove.Enqueue("kn");
+                            }
                         }
+                    }
 
-                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), true, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board))
+                    {
                         if (board.BoardCells[point.x + 1, point.y + 1] != "0")
                         {
-                            moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
+                            if (point.y < 6)
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
+                            if (point.y == 6)
+                            {
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
+                                moveList.pieceAfterMove.Enqueue("q");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
+                                moveList.pieceAfterMove.Enqueue("r");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
+                                moveList.pieceAfterMove.Enqueue("b");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, 1));
+                                moveList.pieceAfterMove.Enqueue("kn");
+                            }
                         }
+                    }
                 }   break;
 
             //Black Side
@@ -871,32 +924,74 @@ public static class RuleHandler
                     //Move
                     if (point.y == 6)
                     {
-                        if (IsEnableToMove(point, new Vector2Int(point.x, 4), false, board))
+                        if (IsEnableToMove(point, new Vector2Int(point.x, 4), "0", false, board))
                             moveList.movePlace.Enqueue(new Vector2Int(point.x, 4));
                     }
 
-                    if (IsEnableToMove(point, point + new Vector2Int(0, -1), false, board))
-                        moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
+                    if (IsEnableToMove(point, point + new Vector2Int(0, -1), "0", false, board))
+                    {
+                        if (point.y > 1)
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
+                        if (point.y == 1)
+                        {
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
+                            moveList.pieceAfterMove.Enqueue("Q");
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
+                            moveList.pieceAfterMove.Enqueue("R");
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
+                            moveList.pieceAfterMove.Enqueue("B");
+                            moveList.movePlace.Enqueue(point + new Vector2Int(0, -1));
+                            moveList.pieceAfterMove.Enqueue("KN");
+                        }
+                    }
 
                     //Capture
-                    if (IsEnableToMove(point, point + new Vector2Int(-1, -1), true, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(-1, -1), "0", true, board))
+                    {
                         if (board.BoardCells[point.x - 1, point.y - 1] != "0")
                         {
-                            moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
+                            if (point.y > 1)
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
+                            if (point.y == 1)
+                            {
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
+                                moveList.pieceAfterMove.Enqueue("Q");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
+                                moveList.pieceAfterMove.Enqueue("R");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
+                                moveList.pieceAfterMove.Enqueue("B");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(-1, -1));
+                                moveList.pieceAfterMove.Enqueue("KN");
+                            }
                         }
+                    }
 
-                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), true, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board))
+                    {
                         if (board.BoardCells[point.x + 1, point.y - 1] != "0")
                         {
-                            moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
+                            if (point.y > 1)
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
+                            if (point.y == 1)
+                            {
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
+                                moveList.pieceAfterMove.Enqueue("Q");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
+                                moveList.pieceAfterMove.Enqueue("R");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
+                                moveList.pieceAfterMove.Enqueue("B");
+                                moveList.movePlace.Enqueue(point + new Vector2Int(1, -1));
+                                moveList.pieceAfterMove.Enqueue("KN");
+                            }
                         }
+                    }
                 }   break;
         }
 
         return moveList;
     }
 
-    public static bool IsEnableToMove(Vector2Int piecePlace, Vector2Int newPlace, bool isCaptureMove, Board board)
+    public static bool IsEnableToMove(Vector2Int piecePlace, Vector2Int newPlace, string newPiece, bool isCaptureMove, Board board)
     {
         bool canMove = false;
         bool whitePiece = isWhitePiece(piecePlace, board.BoardCells);
@@ -918,7 +1013,7 @@ public static class RuleHandler
         //Check if the move is not a self-destruction _(:3JZ)_
         if (canMove)
         {
-            Board newBoard = new Board(movePiece(piecePlace, newPlace, board));
+            Board newBoard = new Board(MovePiece(piecePlace, newPlace, newPiece, board));
             board.Log();
             newBoard.Log();
             if (whitePiece)

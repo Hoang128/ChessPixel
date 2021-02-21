@@ -36,9 +36,11 @@ public class InputManager : MonoBehaviour
                 {
                     switch (touchHit.collider.gameObject.tag)
                     {
-                        case "Marker":
+                        case "Move Marker":
+                        case "Capture Marker":
+                        case "Promo Marker":
                             {
-                                HandleMarkTouch(touchHit.collider.gameObject);
+                                HandleMoveMarkTouch(touchHit.collider.gameObject);
 
                                 Debug.Log("Handled marker touch!");
                             }
@@ -92,7 +94,7 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    void HandleMarkTouch(GameObject mark)
+    void HandleMoveMarkTouch(GameObject mark)
     {
         if (playBoard.GetComponent<PlayBoard>().WhiteTurn)
         {

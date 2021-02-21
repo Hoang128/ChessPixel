@@ -6,9 +6,11 @@ public class PlayerMgr : MonoBehaviour
 {
     bool isWhite = true;
     Vector2Int finalMovePlace = new Vector2Int(-1, -1);
+    string finalPieceChange = "0";
 
     public bool IsWhite { get => isWhite; set => isWhite = value; }
     public Vector2Int FinalMovePlace { get => finalMovePlace; set => finalMovePlace = value; }
+    public string FinalPieceChange { get => finalPieceChange; set => finalPieceChange = value; }
 
     // Start is called before the first frame update
     void Start()
@@ -22,8 +24,8 @@ public class PlayerMgr : MonoBehaviour
         
     }
 
-    public Board Move(Vector2Int piecePlace, Vector2Int movePlace, Board board)
+    public Board Move(Vector2Int piecePlace, Vector2Int movePlace, string newPiece, Board board)
     {
-        return (RuleHandler.movePiece(piecePlace, movePlace, board));
+        return (RuleHandler.MovePiece(piecePlace, movePlace, newPiece, board));
     }
 }
