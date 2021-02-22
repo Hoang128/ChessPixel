@@ -128,30 +128,35 @@ public class BoardStateChooseMove : BoardState
         }
         else
         {
-            if (boardController.WhiteTurn)
+            if (GameObject.FindGameObjectWithTag("Promo Table") == null)
             {
-                if (boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace != new Vector2Int(-1, -1))
+                if (boardController.WhiteTurn)
                 {
-                    Vector2Int movePlace = boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace;
-                    string newPiece = boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalPieceChange;
-                    Board newBoard = RuleHandler.MovePiece(clickPoint, movePlace, newPiece, currentBoard);
-                    boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
-                    boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
-                    moved = true;
-                    stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
+                    if (boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace != new Vector2Int(-1, -1))
+                    {
+                        Vector2Int movePlace = boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace;
+                        string newPiece = boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalPieceChange;
+                        Board newBoard = RuleHandler.MovePiece(clickPoint, movePlace, newPiece, currentBoard);
+                        boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
+                        boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
+                        boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalPieceChange = "0";
+                        moved = true;
+                        stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
+                    }
                 }
-            }
-            else
-            {
-                if (boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace != new Vector2Int(-1, -1))
+                else
                 {
-                    Vector2Int movePlace = boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace;
-                    string newPiece = boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalPieceChange;
-                    Board newBoard = RuleHandler.MovePiece(clickPoint, movePlace, newPiece, currentBoard);
-                    boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
-                    boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
-                    moved = true;
-                    stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
+                    if (boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace != new Vector2Int(-1, -1))
+                    {
+                        Vector2Int movePlace = boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace;
+                        string newPiece = boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalPieceChange;
+                        Board newBoard = RuleHandler.MovePiece(clickPoint, movePlace, newPiece, currentBoard);
+                        boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
+                        boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
+                        boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalPieceChange = "0";
+                        moved = true;
+                        stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
+                    }
                 }
             }
         }

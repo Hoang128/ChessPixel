@@ -77,39 +77,53 @@ public class InputManager : MonoBehaviour
 
     void HandleCellTouch(GameObject cell)
     {
-        if (playBoard.GetComponent<PlayBoard>().StateName == "Board Idle")
+        if (GameObject.FindGameObjectWithTag("Promo Table") == null)
         {
-            if (cell.GetComponent<Cell>().Piece != "0")
+            if (playBoard.GetComponent<PlayBoard>().StateName == "Board Idle")
             {
-                bool whiteTurn = playBoard.GetComponent<PlayBoard>().WhiteTurn;
-                bool whitePiece = RuleHandler.isWhitePiece(cell.GetComponent<Cell>().Coor, playBoard.GetComponent<PlayBoard>().BoardStack.Peek().BoardCells);
+                if (cell.GetComponent<Cell>().Piece != "0")
+                {
+                    bool whiteTurn = playBoard.GetComponent<PlayBoard>().WhiteTurn;
+                    bool whitePiece = RuleHandler.isWhitePiece(cell.GetComponent<Cell>().Coor, playBoard.GetComponent<PlayBoard>().BoardStack.Peek().BoardCells);
 
-                if ((whiteTurn && whitePiece) || (!whiteTurn && !whitePiece))
-                    playBoard.GetComponent<PlayBoard>().ClickPoint = cell.GetComponent<Cell>().Coor;
+                    if ((whiteTurn && whitePiece) || (!whiteTurn && !whitePiece))
+                        playBoard.GetComponent<PlayBoard>().ClickPoint = cell.GetComponent<Cell>().Coor;
+                }
             }
-        }
-        else if (playBoard.GetComponent<PlayBoard>().StateName == "Board Choose Move")
-        {
-            playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2Int(-1, -1);
+            else if (playBoard.GetComponent<PlayBoard>().StateName == "Board Choose Move")
+            {
+                playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2Int(-1, -1);
+            }
         }
     }
 
     void HandleMoveMarkTouch(GameObject mark)
     {
-        if (playBoard.GetComponent<PlayBoard>().WhiteTurn)
+        if (GameObject.FindGameObjectWithTag("Promo Table") == null)
         {
-            if (playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2Int(-1, -1))
+            if (playBoard.GetComponent<PlayBoard>().WhiteTurn)
             {
-                Vector2Int move = mark.GetComponent<Mark>().Coor;
-                playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace = move;
+                if (playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2Int(-1, -1))
+                {
+                    Vector2Int move = mark.GetComponent<Mark>().Coor;
+                    playBoard.GetComponent<PlayBoard>().PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace = move;
+                    if (mark.GetComponent<Mark>().IsPromoMark)
+                    {
+                        playBoard.GetComponent<PlayBoard>().GameCanvas.GetComponent<Canvas>().CreatePromoTable();
+                    }
+                }
             }
-        }
-        else
-        {
-            if (playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2Int(-1, -1))
+            else
             {
-                Vector2Int move = mark.GetComponent<Mark>().Coor;
-                playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace = move;
+                if (playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace == new Vector2Int(-1, -1))
+                {
+                    Vector2Int move = mark.GetComponent<Mark>().Coor;
+                    playBoard.GetComponent<PlayBoard>().PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace = move;
+                    if (mark.GetComponent<Mark>().IsPromoMark)
+                    {
+                        playBoard.GetComponent<PlayBoard>().GameCanvas.GetComponent<Canvas>().CreatePromoTable();
+                    }
+                }
             }
         }
     }
