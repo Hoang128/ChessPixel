@@ -9,6 +9,7 @@ TagManager:
   - Move Marker
   - Capture Marker
   - Marker
+  - Promo Table
   layers:
   - Default
   - TransparentFX

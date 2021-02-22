@@ -11,6 +11,7 @@ public class PlayBoard : MonoBehaviour
     [SerializeField] GameObject captureMarkObject;
     [SerializeField] GameObject movePromoMarkObject;
     [SerializeField] GameObject capturePromoMarkObject;
+    [SerializeField] GameObject gameCanvas;
 
     [SerializeField] GameObject playerWhite;
     [SerializeField] GameObject playerBlack;
@@ -38,6 +39,7 @@ public class PlayBoard : MonoBehaviour
     public GameObject PlayerBlackMgr { get => playerBlackMgr; set => playerBlackMgr = value; }
     public GameObject MovePromoMarkObject { get => movePromoMarkObject; set => movePromoMarkObject = value; }
     public GameObject CapturePromoMarkObject { get => capturePromoMarkObject; set => capturePromoMarkObject = value; }
+    public GameObject GameCanvas { get => gameCanvas; set => gameCanvas = value; }
 
     // Start is called before the first frame update
     void Start()
