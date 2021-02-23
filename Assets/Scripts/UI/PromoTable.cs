@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class PromoTable : MonoBehaviour
 {
-    [SerializeField] bool whiteSide = true;
     [SerializeField] Sprite[] whitePromoPieceImage;
     [SerializeField] Sprite[] blackPromoPieceImage;
 
@@ -17,10 +16,10 @@ public class PromoTable : MonoBehaviour
     void Start()
     {
         promoButtons = GetComponentsInChildren<PiecePromoButton>();
-
-        foreach(PiecePromoButton promoButton in promoButtons)
+        PlayBoard boardController = GameObject.Find("PlayBoard").GetComponent<PlayBoard>();
+        foreach (PiecePromoButton promoButton in promoButtons)
         {
-            if (whiteSide)
+            if (boardController.WhiteTurn)
             {
                 switch (promoButton.Piece)
                 {

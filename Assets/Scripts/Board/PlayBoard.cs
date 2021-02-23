@@ -25,6 +25,7 @@ public class PlayBoard : MonoBehaviour
     private bool whiteTurn = true;
     private GameObject playerWhiteMgr;
     private GameObject playerBlackMgr;
+    private int chooseMovePhase = 0;
 
     public Stack<Board> BoardStack { get => boardStack; set => boardStack = value; }
     public Vector2Int ClickPoint { get => clickPoint; set => clickPoint = value; }
@@ -40,6 +41,7 @@ public class PlayBoard : MonoBehaviour
     public GameObject MovePromoMarkObject { get => movePromoMarkObject; set => movePromoMarkObject = value; }
     public GameObject CapturePromoMarkObject { get => capturePromoMarkObject; set => capturePromoMarkObject = value; }
     public GameObject GameCanvas { get => gameCanvas; set => gameCanvas = value; }
+    public int ChooseMovePhase { get => chooseMovePhase; set => chooseMovePhase = value; }
 
     // Start is called before the first frame update
     void Start()

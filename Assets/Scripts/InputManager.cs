@@ -93,6 +93,7 @@ public class InputManager : MonoBehaviour
             else if (playBoard.GetComponent<PlayBoard>().StateName == "Board Choose Move")
             {
                 playBoard.GetComponent<PlayBoard>().ClickPoint = new Vector2Int(-1, -1);
+                playBoard.GetComponent<PlayBoard>().ChooseMovePhase = 0;
             }
         }
     }
@@ -110,7 +111,10 @@ public class InputManager : MonoBehaviour
                     if (mark.GetComponent<Mark>().IsPromoMark)
                     {
                         playBoard.GetComponent<PlayBoard>().GameCanvas.GetComponent<Canvas>().CreatePromoTable();
+                        playBoard.GetComponent<PlayBoard>().ChooseMovePhase = 3;
                     }
+                    else
+                        playBoard.GetComponent<PlayBoard>().ChooseMovePhase = 2;
                 }
             }
             else
@@ -122,7 +126,10 @@ public class InputManager : MonoBehaviour
                     if (mark.GetComponent<Mark>().IsPromoMark)
                     {
                         playBoard.GetComponent<PlayBoard>().GameCanvas.GetComponent<Canvas>().CreatePromoTable();
+                        playBoard.GetComponent<PlayBoard>().ChooseMovePhase = 3;
                     }
+                    else
+                        playBoard.GetComponent<PlayBoard>().ChooseMovePhase = 2;
                 }
             }
         }

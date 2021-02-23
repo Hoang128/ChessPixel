@@ -35,7 +35,7 @@ public class BoardStateChooseMove : BoardState
         }
         else
             player = boardController.PlayerBlackMgr;
-
+        boardController.ChooseMovePhase = 1;
         clickPoint = boardController.GetComponent<PlayBoard>().ClickPoint;
         cellSize = boardController.GetComponent<PlayBoard>().CellSize;
         currentBoard = boardController.GetComponent<PlayBoard>().BoardStack.Peek();
@@ -105,6 +105,8 @@ public class BoardStateChooseMove : BoardState
 
         boardController.ClickPoint = new Vector2Int(-1, -1);
 
+        boardController.ChooseMovePhase = 0;
+
         if (moved)
         {
             if (boardController.WhiteTurn)
@@ -122,11 +124,11 @@ public class BoardStateChooseMove : BoardState
 
     public override void OnUpdate()
     {
-        if (boardController.ClickPoint == new Vector2Int(-1, -1))
+        if (boardController.ChooseMovePhase == 0)
         {
             stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
         }
-        else
+        else if (boardController.ChooseMovePhase > 1)
         {
             if (GameObject.FindGameObjectWithTag("Promo Table") == null)
             {
