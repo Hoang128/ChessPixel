@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BoardStateIdle : BoardState
 {
+    GameObject player;
+    bool isWhiteTurn;
     public BoardStateIdle(StateMachine stateMachine, PlayBoard boardController) : base(stateMachine, boardController)
     {
         this.boardController = boardController;
@@ -14,6 +16,11 @@ public class BoardStateIdle : BoardState
     {
         Debug.Log("Entered Board State Idle!");
 
+        isWhiteTurn = boardController.GetComponent<PlayBoard>().WhiteTurn;
+        if (isWhiteTurn)
+            player = boardController.GetComponent<PlayBoard>().PlayerWhiteMgr;
+        else
+            player = boardController.GetComponent<PlayBoard>().PlayerBlackMgr;
         boardController.GetComponent<PlayBoard>().ClickPoint = new Vector2Int(-1, -1);
         boardController.GetComponent<PlayBoard>().StateName = "Board Idle";
         boardController.PlayerBlack.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
@@ -27,9 +34,19 @@ public class BoardStateIdle : BoardState
 
     public override void OnUpdate()
     {
-        if (boardController.ClickPoint != new Vector2Int(-1, -1))
+        if (player.GetComponent<AIMgr>() == null)
         {
-            stateMachine.StateChange(new BoardStateChooseMove(stateMachine, boardController));
+            if (boardController.ClickPoint != new Vector2Int(-1, -1))
+            {
+                stateMachine.StateChange(new BoardStateChooseMove(stateMachine, boardController));
+            }
+        }
+        else
+        {
+            if (player.GetComponent<AIMgr>().FinalPiecePlace != new Vector2Int(-1, -1))
+            {
+                stateMachine.StateChange(new BoardStateMove(stateMachine, boardController));
+            }
         }
     }
 
