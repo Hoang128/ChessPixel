@@ -39,10 +39,11 @@ public class Cell : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        int pieceX = System.Convert.ToInt32(coor.x);
-        int pieceY = System.Convert.ToInt32(coor.y);
-        string piece = playBoard.GetComponent<PlayBoard>().BoardStack.Peek().BoardCells[pieceX, pieceY];
-        Handles.Label(transform.position - new Vector3(2f, -2f, 0f), coor.x + ", " + coor.y);
-        Handles.Label(transform.position - new Vector3(2f, -1f, 0f), piece);
+        if (playBoard.GetComponent<PlayBoard>().BoardStack.Count > 0)
+        {
+            string piece = playBoard.GetComponent<PlayBoard>().BoardStack.Peek().BoardCells[coor.x, coor.y];
+            Handles.Label(transform.position - new Vector3(2f, -2f, 0f), coor.x + ", " + coor.y);
+            Handles.Label(transform.position - new Vector3(2f, -1f, 0f), piece);
+        }
     }
 }

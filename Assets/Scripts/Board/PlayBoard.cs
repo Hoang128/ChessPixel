@@ -26,6 +26,17 @@ public class PlayBoard : MonoBehaviour
     private GameObject playerWhiteMgr;
     private GameObject playerBlackMgr;
     private int chooseMovePhase = 0;
+    private string[,] startBoardCell = new string[8, 8]
+        {
+            { "r" , "p", "0", "0", "0", "0", "P", "R" },
+            { "kn", "p", "0", "0", "0", "0", "P", "KN" },
+            { "b" , "p", "0", "0", "0", "0", "P", "B" },
+            { "q" , "p", "0", "0", "0", "0", "P", "Q" },
+            { "k" , "p", "0", "0", "0", "0", "P", "K" },
+            { "b" , "p", "0", "0", "0", "0", "P", "B" },
+            { "kn", "p", "0", "0", "0", "0", "P", "KN" },
+            { "r" , "p", "0", "0", "0", "0", "P", "R" }
+        };
 
     public Stack<Board> BoardStack { get => boardStack; set => boardStack = value; }
     public Vector2Int ClickPoint { get => clickPoint; set => clickPoint = value; }
@@ -46,32 +57,25 @@ public class PlayBoard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        PlayerMgr playerComp;
+        playerWhiteMgr = GameObject.Instantiate(playerWhite);
+        playerComp = playerWhiteMgr.GetComponent<PlayerMgr>();
+        if (playerComp != null)
+            playerWhiteMgr.GetComponent<PlayerMgr>().IsWhite = true;
+        else
+            playerWhiteMgr.GetComponent<AIMgr>().WhiteSide = true;
+        playerBlackMgr = GameObject.Instantiate(playerBlack);
+        playerComp = playerBlackMgr.GetComponent<PlayerMgr>();
+        if (playerComp != null)
+            playerBlackMgr.GetComponent<PlayerMgr>().IsWhite = false;
+        else
+            playerBlackMgr.GetComponent<AIMgr>().WhiteSide = false;
+
         stateMachine = new StateMachine();
         stateMachine.StateChange(new BoardStateIdle(stateMachine, this));
+
         InitPlayBoard();
         InitUIBoard();
-
-        playerWhiteMgr = GameObject.Instantiate(playerWhite);
-        playerWhiteMgr.GetComponent<PlayerMgr>().IsWhite = true;
-        playerBlackMgr = GameObject.Instantiate(playerBlack);
-        playerBlackMgr.GetComponent<PlayerMgr>().IsWhite = false;
-
-        string[,] startCell = new string[8, 8]
-        {
-            { "r" , "p", "0", "0", "0", "0", "P", "R" },
-            { "kn", "p", "0", "0", "0", "0", "P", "KN" },
-            { "b" , "p", "0", "0", "0", "0", "P", "B" },
-            { "q" , "p", "0", "0", "0", "0", "P", "Q" },
-            { "k" , "p", "0", "0", "0", "0", "P", "K" },
-            { "b" , "p", "0", "0", "0", "0", "P", "B" },
-            { "kn", "p", "0", "0", "0", "0", "P", "KN" },
-            { "r" , "p", "0", "0", "0", "0", "P", "R" }
-        };
-
-        Board startBoard = new Board();
-        startBoard.BoardCells = startCell;
-
-        UpdatePlayBoard(startBoard);
         UpdateUIBoard();
 
         clickPoint.x = -1;
@@ -113,6 +117,7 @@ public class PlayBoard : MonoBehaviour
         boardStack = new Stack<Board>();
         Board startBoard = new Board();
         boardStack.Push(startBoard);
+        boardStack.Peek().UpdateCells(startBoardCell);
     }
 
     public void InitUIBoard()
@@ -147,6 +152,32 @@ public class PlayBoard : MonoBehaviour
                 cellUI[i, j].GetComponentInChildren<Piece>().UpdatePiece(boardStack.Peek().BoardCells[i, j]);
             }
         }
+    }
+
+    public void UndoMove()
+    {
+        if (boardStack.Count > 2)
+        {
+            boardStack.Pop();
+            boardStack.Pop();
+
+            UpdateUIBoard();
+        }
+    }
+
+    public void ResetBoard()
+    {
+        boardStack.Clear();
+        InitPlayBoard();
+        UpdateUIBoard();
+
+        Board startBoard = new Board();
+        startBoard.BoardCells = startBoardCell;
+
+        UpdatePlayBoard(startBoard);
+        UpdateUIBoard();
+
+        stateMachine.StateChange(new BoardStateIdle(stateMachine, this));
     }
 
     private void OnDrawGizmos()

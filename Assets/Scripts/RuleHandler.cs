@@ -451,7 +451,7 @@ public static class RuleHandler
             //Pawn check
             if (((point.x - 1) >= 0) && ((point.y + 1) <= 7) && board.BoardCells[point.x - 1, point.y + 1] == "P")
                 return true;
-            if (((point.x + 1) >= 0) && ((point.y + 1) <= 7) && board.BoardCells[point.x + 1, point.y + 1] == "P")
+            if (((point.x + 1) <= 7) && ((point.y + 1) <= 7) && board.BoardCells[point.x + 1, point.y + 1] == "P")
                 return true;
 
         }
@@ -667,7 +667,7 @@ public static class RuleHandler
             //Pawn check
             if (((point.x - 1) >= 0) && ((point.y - 1) >= 0) && board.BoardCells[point.x - 1, point.y - 1] == "p")
                 return true;
-            if (((point.x + 1) >= 0) && ((point.y - 1) >= 0) && board.BoardCells[point.x + 1, point.y - 1] == "p")
+            if (((point.x + 1) <= 7) && ((point.y - 1) >= 0) && board.BoardCells[point.x + 1, point.y - 1] == "p")
                 return true;
         }
 
@@ -852,13 +852,17 @@ public static class RuleHandler
             //White Side
             case "p":
                 {
-                    //Move
+                    //2 Step Move
                     if (point.y == 1)
                     {
                         if (IsEnableToMove(point, new Vector2Int(point.x, 3), "0", false, board))
-                            moveList.movePlace.Enqueue(new Vector2Int(point.x, 3));
+                        {
+                            if (IsEnableToMove(point, new Vector2Int(point.x, 2), "0", false, board))
+                                moveList.movePlace.Enqueue(new Vector2Int(point.x, 3));
+                        }
                     }
 
+                    //Normal Moves
                     if (IsEnableToMove(point, point + new Vector2Int(0, 1), "0", false, board))
                     {
                         if (point.y < 6)
@@ -897,6 +901,7 @@ public static class RuleHandler
                         }
                     }
 
+                    //Promo
                     if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board))
                     {
                         if (board.BoardCells[point.x + 1, point.y + 1] != "0")
@@ -921,11 +926,14 @@ public static class RuleHandler
             //Black Side
             case "P":
                 {
-                    //Move
+                    // 2 Step Move
                     if (point.y == 6)
                     {
                         if (IsEnableToMove(point, new Vector2Int(point.x, 4), "0", false, board))
-                            moveList.movePlace.Enqueue(new Vector2Int(point.x, 4));
+                        {
+                            if (IsEnableToMove(point, new Vector2Int(point.x, 5), "0", false, board))
+                                moveList.movePlace.Enqueue(new Vector2Int(point.x, 4));
+                        }
                     }
 
                     if (IsEnableToMove(point, point + new Vector2Int(0, -1), "0", false, board))
@@ -966,6 +974,7 @@ public static class RuleHandler
                         }
                     }
 
+                    //Normal Moves
                     if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board))
                     {
                         if (board.BoardCells[point.x + 1, point.y - 1] != "0")
@@ -1014,8 +1023,6 @@ public static class RuleHandler
         if (canMove)
         {
             Board newBoard = new Board(MovePiece(piecePlace, newPlace, newPiece, board));
-            board.Log();
-            newBoard.Log();
             if (whitePiece)
             {
                 for (int i = 0; i <= 7; i++)

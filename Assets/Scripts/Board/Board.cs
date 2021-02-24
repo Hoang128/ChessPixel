@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class Board
 {
-    long evaluation;
+    double evaluation;
     string[,] boardCell = new string[8, 8];
     bool blackCanNCastling = true;
     bool blackCanFCastling = true;
@@ -58,6 +58,27 @@ public class Board
         blackCanFCastling = newBoard.blackCanFCastling;
         whiteCanNCastling = newBoard.whiteCanNCastling;
         whiteCanFCastling = newBoard.whiteCanFCastling;
+
+        if (boardCell[7, 0] != "r") whiteCanNCastling = false;
+        if (boardCell[0, 0] != "r") whiteCanFCastling = false;
+        if (boardCell[7, 7] != "R") blackCanNCastling = false;
+        if (boardCell[0, 7] != "R") blackCanFCastling = false;
+    }
+
+    public void UpdateCells(string[,] newBoardCells)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                boardCell[i, j] = newBoardCells[i, j];
+            }
+        }
+
+        if (boardCell[7, 0] != "r") whiteCanNCastling = false;
+        if (boardCell[0, 0] != "r") whiteCanFCastling = false;
+        if (boardCell[7, 7] != "R") blackCanNCastling = false;
+        if (boardCell[0, 7] != "R") blackCanFCastling = false;
     }
 
     public void Log()
@@ -84,7 +105,7 @@ public class Board
         Debug.Log(DebugLine);
     }
 
-    public long Evaluation { get => evaluation; set => evaluation = value; }
+    public double Evaluation { get => evaluation; set => evaluation = value; }
     public string[,] BoardCells { get => boardCell; set => boardCell = value; }
     public bool BlackCanNCastling { get => blackCanNCastling; set => blackCanNCastling = value; }
     public bool BlackCanFCastling { get => blackCanFCastling; set => blackCanFCastling = value; }

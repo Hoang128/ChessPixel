@@ -23,8 +23,6 @@ public class BoardStateIdle : BoardState
             player = boardController.GetComponent<PlayBoard>().PlayerBlackMgr;
         boardController.GetComponent<PlayBoard>().ClickPoint = new Vector2Int(-1, -1);
         boardController.GetComponent<PlayBoard>().StateName = "Board Idle";
-        boardController.PlayerBlack.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
-        boardController.PlayerWhite.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
     }
 
     public override void OnExit()
@@ -34,7 +32,8 @@ public class BoardStateIdle : BoardState
 
     public override void OnUpdate()
     {
-        if (player.GetComponent<AIMgr>() == null)
+        PlayerMgr aiComp = player.GetComponent<PlayerMgr>();
+        if (aiComp != null)
         {
             if (boardController.ClickPoint != new Vector2Int(-1, -1))
             {
@@ -43,10 +42,7 @@ public class BoardStateIdle : BoardState
         }
         else
         {
-            if (player.GetComponent<AIMgr>().FinalPiecePlace != new Vector2Int(-1, -1))
-            {
-                stateMachine.StateChange(new BoardStateMove(stateMachine, boardController));
-            }
+                stateMachine.StateChange(new BoardStateAIMove(stateMachine, boardController));
         }
     }
 

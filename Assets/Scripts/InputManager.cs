@@ -41,15 +41,11 @@ public class InputManager : MonoBehaviour
                         case "Promo Marker":
                             {
                                 HandleMoveMarkTouch(touchHit.collider.gameObject);
-
-                                Debug.Log("Handled marker touch!");
                             }
                             break;
                         case "Cell":
                             {
                                 HandleCellTouch(touchHit.collider.gameObject);
-
-                                Debug.Log("Handled cell touch!");
                             }   
                             break;
                     }
