@@ -852,7 +852,7 @@ MonoBehaviour:
   movePromoMarkObject: {fileID: 5208716086144950585, guid: 8edbcc51dc2549c41a7eb7d10b4f5754, type: 3}
   capturePromoMarkObject: {fileID: 7238664853878211670, guid: 1b856161e03ddce4c87fe0fddf465e88, type: 3}
   gameCanvas: {fileID: 1351545549}
-  playerWhite: {fileID: 917670716431832993, guid: cea4a4cd5fd113a44b9b9bd087438eac, type: 3}
+  playerWhite: {fileID: 4563212219635069427, guid: 3dd77e89405ff5947874c872bcdf8cae, type: 3}
   playerBlack: {fileID: 917670716431832993, guid: cea4a4cd5fd113a44b9b9bd087438eac, type: 3}
   cellSize: 5
 --- !u!4 &1773131077
