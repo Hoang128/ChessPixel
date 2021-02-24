@@ -86,19 +86,23 @@ public class AIMgr : MonoBehaviour
         Stack<MoveList> allMoves = new Stack<MoveList>();
         allMoves = GetAllMoveInBoard(currentBoard, whiteSide);
         Debug.Log("moveable pieces = " + allMoves.Count);
+        string logSide = "White";
+        if (!whiteSide)
+            logSide = "Black";
+
         if (allMoves.Count == 0)
         {
 
             if (IsCheckedCell(kingPlace, currentBoard, whiteSide))
             {
                 Debug.Log("Checkmate");
-                Debug.Log("AI Lose");
+                Debug.Log(logSide + " AI Lose");
                 return;
             }
             else
             {
                 Debug.Log("Can't move");
-                Debug.Log("AI Draw");
+                Debug.Log("Draw");
                 return;
             }
         }
@@ -112,8 +116,10 @@ public class AIMgr : MonoBehaviour
                 string tempPieceChange = "0";
                 if (pieceMoveList.pieceAfterMove.Count != 0)
                 {
-                    finalPieceChange = pieceMoveList.pieceAfterMove.Dequeue();
+                    tempPieceChange = pieceMoveList.pieceAfterMove.Dequeue();
                 }
+
+                Debug.Log(logSide + " search move: " + currentBoard.BoardCells[tempPiecePlace.x, tempPiecePlace.y] + " from " + tempPiecePlace.x + ", " + tempPiecePlace.y + " to " + tempPieceChange + " " + tempMovePlace.x + ", " + tempMovePlace.y);
 
                 Board tempBoard = new Board(currentBoard);
                 tempBoard = MovePiece(tempPiecePlace, tempMovePlace, tempPieceChange, tempBoard);
@@ -125,7 +131,7 @@ public class AIMgr : MonoBehaviour
                         finalPieceChange = tempPieceChange;
                         finalMovePlace = tempMovePlace;
                         finalPiecePlace = tempPiecePlace;
-                        Debug.Log("white search move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
+                        Debug.Log(logSide + " choose move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
                     }
                 }
                 else
@@ -136,16 +142,12 @@ public class AIMgr : MonoBehaviour
                         finalPieceChange = tempPieceChange;
                         finalMovePlace = tempMovePlace;
                         finalPiecePlace = tempPiecePlace;
-                        Debug.Log("black search move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
+                        Debug.Log(logSide + " choose move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
                     }
                 }
             }
         }
 
-
-        string logSide = "white";
-        if (!whiteSide)
-            logSide = "black";
         if (finalPieceChange == "0")
             Debug.Log(logSide + " use move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + finalMovePlace.x + ", " + finalMovePlace.y);
         else

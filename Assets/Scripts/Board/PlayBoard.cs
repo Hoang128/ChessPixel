@@ -27,16 +27,27 @@ public class PlayBoard : MonoBehaviour
     private GameObject playerBlackMgr;
     private int chooseMovePhase = 0;
     private string[,] startBoardCell = new string[8, 8]
-        {
-            { "r" , "p", "0", "0", "0", "0", "P", "R" },
-            { "kn", "p", "0", "0", "0", "0", "P", "KN" },
-            { "b" , "p", "0", "0", "0", "0", "P", "B" },
-            { "q" , "p", "0", "0", "0", "0", "P", "Q" },
-            { "k" , "p", "0", "0", "0", "0", "P", "K" },
-            { "b" , "p", "0", "0", "0", "0", "P", "B" },
-            { "kn", "p", "0", "0", "0", "0", "P", "KN" },
-            { "r" , "p", "0", "0", "0", "0", "P", "R" }
-        };
+    {
+        { "r" , "p", "0", "0", "0", "0", "P", "R" },
+        { "kn", "p", "0", "0", "0", "0", "P", "KN" },
+        { "b" , "p", "0", "0", "0", "0", "P", "B" },
+        { "q" , "p", "0", "0", "0", "0", "P", "Q" },
+        { "k" , "p", "0", "0", "0", "0", "P", "K" },
+        { "b" , "p", "0", "0", "0", "0", "P", "B" },
+        { "kn", "p", "0", "0", "0", "0", "P", "KN" },
+        { "r" , "p", "0", "0", "0", "0", "P", "R" }
+    };
+    private string[,] testBoardCell = new string[8, 8]
+    {
+        { "0", "P", "0", "0", "0", "0", "p", "0" },
+        { "0", "P", "0", "0", "0", "0", "p", "0" },
+        { "0", "P", "0", "0", "0", "0", "p", "0" },
+        { "0", "P", "k", "0", "0", "0", "p", "0" },
+        { "0", "P", "0", "0", "0", "K", "p", "0" },
+        { "0", "P", "0", "0", "0", "0", "p", "0" },
+        { "0", "P", "0", "0", "0", "0", "p", "0" },
+        { "0", "P", "0", "0", "0", "0", "p", "0" }
+    };
 
     public Stack<Board> BoardStack { get => boardStack; set => boardStack = value; }
     public Vector2Int ClickPoint { get => clickPoint; set => clickPoint = value; }
@@ -80,7 +91,6 @@ public class PlayBoard : MonoBehaviour
 
         clickPoint.x = -1;
         clickPoint.y = -1;
-        boardStack.Peek().Log();
     }
 
     // Update is called once per frame
