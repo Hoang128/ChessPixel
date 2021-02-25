@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using static RuleHandler;
+using System.Linq;
 
 public class AIMgr : MonoBehaviour
 {
@@ -16,6 +18,8 @@ public class AIMgr : MonoBehaviour
     private const double MAX_EVALUATION = 100000;
     private const double MIN_EVALUATION = -100000;
     private bool canMove = false;
+    Thread findMoveThread;
+    Board currentBoard;
 
     private GameObject boardController;
 
@@ -37,13 +41,21 @@ public class AIMgr : MonoBehaviour
 
     void Start()
     {
-        FindBestMove(boardController.GetComponent<PlayBoard>().BoardStack.Peek(),whiteSide);    
+        currentBoard = boardController.GetComponent<PlayBoard>().BoardStack.Peek();
+        //FindBestMove(boardController.GetComponent<PlayBoard>().BoardStack.Peek(),whiteSide);
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void StartFindMoveThread(Board currentBoard, bool whiteSide)
+    {
+        findMoveThread = new Thread
+            (() => { FindBestMove(currentBoard, whiteSide); });
+        findMoveThread.Start();
     }
 
     public void FindBestMove(Board currentBoard, bool whiteSide)
@@ -58,11 +70,13 @@ public class AIMgr : MonoBehaviour
                 case AIType.GREEDY: FindBestMoveGreedy(currentBoard, whiteSide); break;
                 case AIType.MINIMAX_1: FindBestMoveMinimax(currentBoard, whiteSide, 1); break;
                 case AIType.MINIMAX_2: FindBestMoveMinimax(currentBoard, whiteSide, 2); break;
-                case AIType.MINIMAX_3: FindBestMoveMinimax(currentBoard, whiteSide, 3); break;
+                case AIType.MINIMAX_3: FindBestMoveMinimaxAlphaBetaPruning(currentBoard, whiteSide, 3); break;
                 case AIType.MINIMAX_4: FindBestMoveMinimax(currentBoard, whiteSide, 4); break;
                 case AIType.MINIMAX_5: FindBestMoveMinimax(currentBoard, whiteSide, 5); break;
             }
         }
+
+        canMove = true;
     }
 
     void FindBestMoveGreedy(Board currentBoard, bool whiteSide)
@@ -128,7 +142,6 @@ public class AIMgr : MonoBehaviour
         else
             Debug.Log(logSide + " use move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + finalPieceChange + " " + finalMovePlace.x + ", " + finalMovePlace.y);
         Debug.Log("evaluation = " + bestEvaluation);
-        canMove = true;
     }
 
     void FindBestMoveMinimax(Board currentBoard, bool whiteSide, int depth)
@@ -162,8 +175,7 @@ public class AIMgr : MonoBehaviour
 
                 Board tempBoard = new Board(currentBoard);
                 tempBoard = MovePiece(tempPiecePlace, tempMovePlace, tempPieceChange, tempBoard);
-                TreeNode<Board> boardTreeRoot = new TreeNode<Board>(tempBoard);
-                double moveEvaluation = Minimax(boardTreeRoot, depth - 1, !whiteSide);
+                double moveEvaluation = Minimax(tempBoard, depth - 1, !whiteSide);
                 if (whiteSide)
                 {
                     if (moveEvaluation > bestEvaluation)
@@ -196,16 +208,81 @@ public class AIMgr : MonoBehaviour
         else
             Debug.Log(logSide + " use move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + finalPieceChange + " " + finalMovePlace.x + ", " + finalMovePlace.y);
         Debug.Log("evaluation = " + bestEvaluation);
-        canMove = true;
     }
 
-    double Minimax(TreeNode<Board> node, int depth, bool whiteSide)
+    void FindBestMoveMinimaxAlphaBetaPruning(Board currentBoard, bool whiteSide, int depth)
+    {
+        double bestEvaluation = 0;
+
+        if (whiteSide)
+            bestEvaluation = MIN_EVALUATION;
+        else
+            bestEvaluation = MAX_EVALUATION;
+
+        Stack<MoveList> allMoves = new Stack<MoveList>();
+        allMoves = GetAllMoveInBoard(currentBoard, whiteSide);
+        Debug.Log("moveable pieces = " + allMoves.Count);
+        string logSide = "White";
+        if (!whiteSide)
+            logSide = "Black";
+
+        foreach (MoveList pieceMoveList in allMoves)
+        {
+            foreach (Vector2Int tempMovePlace in pieceMoveList.movePlace)
+            {
+                Vector2Int tempPiecePlace = pieceMoveList.piecePlace;
+                string tempPieceChange = "0";
+                if (pieceMoveList.pieceAfterMove.Count != 0)
+                {
+                    tempPieceChange = pieceMoveList.pieceAfterMove[pieceMoveList.movePlace.IndexOf(tempMovePlace)];
+                }
+
+                Debug.Log(logSide + " search move: " + currentBoard.BoardCells[tempPiecePlace.x, tempPiecePlace.y] + " from " + tempPiecePlace.x + ", " + tempPiecePlace.y + " to " + tempPieceChange + " " + tempMovePlace.x + ", " + tempMovePlace.y);
+
+                Board tempBoard = new Board(currentBoard);
+                tempBoard = MovePiece(tempPiecePlace, tempMovePlace, tempPieceChange, tempBoard);
+                double moveEvaluation = MinimaxAlphaBetaPruning(tempBoard, depth - 1, !whiteSide, MIN_EVALUATION, MAX_EVALUATION);
+                if (whiteSide)
+                {
+                    if (moveEvaluation > bestEvaluation)
+                    {
+                        bestEvaluation = moveEvaluation;
+                        finalPieceChange = tempPieceChange;
+                        finalMovePlace = tempMovePlace;
+                        finalPiecePlace = tempPiecePlace;
+                        Debug.Log(logSide + " choose move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
+                        Debug.Log("evaluation = " + bestEvaluation);
+                    }
+                }
+                else
+                {
+                    if (moveEvaluation < bestEvaluation)
+                    {
+                        bestEvaluation = moveEvaluation;
+                        finalPieceChange = tempPieceChange;
+                        finalMovePlace = tempMovePlace;
+                        finalPiecePlace = tempPiecePlace;
+                        Debug.Log(logSide + " choose move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
+                        Debug.Log("evaluation = " + bestEvaluation);
+                    }
+                }
+            }
+        }
+
+        if (finalPieceChange == "0")
+            Debug.Log(logSide + " use move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + finalMovePlace.x + ", " + finalMovePlace.y);
+        else
+            Debug.Log(logSide + " use move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + finalPieceChange + " " + finalMovePlace.x + ", " + finalMovePlace.y);
+        Debug.Log("evaluation = " + bestEvaluation);
+    }
+
+    double Minimax(Board board, int depth, bool whiteSide)
     {
         if (depth == 0)
-            return node.Data.Evaluation;
+            return board.Evaluation;
         else
         {
-            Board currentBoard = new Board(node.Data);
+            Board currentBoard = new Board(board);
             Stack<MoveList> allMoves = new Stack<MoveList>();
             allMoves = GetAllMoveInBoard(currentBoard, whiteSide);
             Debug.Log("moveable pieces = " + allMoves.Count);
@@ -254,9 +331,8 @@ public class AIMgr : MonoBehaviour
 
                         Board tempChildBoard = new Board(tempBoard);
                         tempChildBoard = MovePiece(tempPiecePlace, tempMovePlace, tempPieceChange, tempBoard);
-                        TreeNode<Board> boardTreeChild = new TreeNode<Board>(tempChildBoard, node);
 
-                        double currentEvaluation = Minimax(boardTreeChild, depth - 1, !whiteSide);
+                        double currentEvaluation = Minimax(tempChildBoard, depth - 1, !whiteSide);
                         if (currentEvaluation > bestEvaluation)
                         {
                             bestEvaluation = currentEvaluation;
@@ -288,13 +364,129 @@ public class AIMgr : MonoBehaviour
 
                         Board tempChildBoard = new Board(tempBoard);
                         tempChildBoard = MovePiece(tempPiecePlace, tempMovePlace, tempPieceChange, tempBoard);
-                        TreeNode<Board> boardTreeChild = new TreeNode<Board>(tempChildBoard, node);
 
-                        double currentEvaluation = Minimax(boardTreeChild, depth - 1, !whiteSide);
+                        double currentEvaluation = Minimax(tempChildBoard, depth - 1, !whiteSide);
                         if (currentEvaluation < bestEvaluation)
                         {
                             bestEvaluation = currentEvaluation;
                         }
+                    }
+                }
+
+                Debug.Log("evaluation = " + bestEvaluation);
+                return bestEvaluation;
+            }
+        }
+    }
+
+    double MinimaxAlphaBetaPruning(Board board, int depth, bool whiteSide, double alpha, double beta)
+    {
+        if (depth == 0)
+            return board.Evaluation;
+        else
+        {
+            Board currentBoard = new Board(board);
+            Stack<MoveList> allMoves = new Stack<MoveList>();
+            allMoves = GetAllMoveInBoard(currentBoard, whiteSide);
+            Debug.Log("moveable pieces = " + allMoves.Count);
+            string logSide = "White";
+            if (!whiteSide)
+                logSide = "Black";
+
+            if (allMoves.Count == 0)
+            {
+                int gameState = GetGameState(currentBoard);
+                if (Mathf.Abs(gameState) == 2) return 0;
+                else if (gameState == 1)
+                {
+                    if (whiteSide)
+                        return MAX_EVALUATION;
+                    else
+                        return MIN_EVALUATION;
+                }
+                else if (gameState == -1)
+                {
+                    if (whiteSide)
+                        return MIN_EVALUATION;
+                    else
+                        return MAX_EVALUATION;
+                }
+            }
+
+            if (whiteSide)
+            {
+                double bestEvaluation = MIN_EVALUATION;
+
+                foreach (MoveList pieceMoveList in allMoves)
+                {
+                    foreach (Vector2Int movePlace in pieceMoveList.movePlace)
+                    {
+                        Board tempBoard = new Board(currentBoard);
+                        Vector2Int tempPiecePlace = pieceMoveList.piecePlace;
+                        Vector2Int tempMovePlace = movePlace;
+                        string tempPieceChange = "0";
+                        if (pieceMoveList.pieceAfterMove.Count != 0)
+                        {
+                            tempPieceChange = pieceMoveList.pieceAfterMove[pieceMoveList.movePlace.IndexOf(movePlace)];
+                        }
+                        Debug.Log(logSide + " search move: " + currentBoard.BoardCells[tempPiecePlace.x, tempPiecePlace.y] + " from " + tempPiecePlace.x + ", " + tempPiecePlace.y + " to " + tempPieceChange + " " + tempMovePlace.x + ", " + tempMovePlace.y);
+                        Debug.Log("evaluation = " + bestEvaluation);
+
+                        Board tempChildBoard = new Board(tempBoard);
+                        tempChildBoard = MovePiece(tempPiecePlace, tempMovePlace, tempPieceChange, tempBoard);
+
+                        double currentEvaluation
+                            = MinimaxAlphaBetaPruning(tempChildBoard, depth - 1, !whiteSide, alpha, beta);
+                        if (currentEvaluation > bestEvaluation)
+                        {
+                            bestEvaluation = currentEvaluation;
+                        }
+                        if (bestEvaluation > alpha)
+                        {
+                            alpha = bestEvaluation;
+                        }
+                        if (beta <= alpha)
+                            break;
+                    }
+                }
+
+                Debug.Log("evaluation = " + bestEvaluation);
+                return bestEvaluation;
+            }
+            else
+            {
+                double bestEvaluation = MAX_EVALUATION;
+
+                foreach (MoveList pieceMoveList in allMoves)
+                {
+                    foreach (Vector2Int movePlace in pieceMoveList.movePlace)
+                    {
+                        Board tempBoard = new Board(currentBoard);
+                        Vector2Int tempPiecePlace = pieceMoveList.piecePlace;
+                        Vector2Int tempMovePlace = movePlace;
+                        string tempPieceChange = "0";
+                        if (pieceMoveList.pieceAfterMove.Count != 0)
+                        {
+                            tempPieceChange = pieceMoveList.pieceAfterMove[pieceMoveList.movePlace.IndexOf(movePlace)];
+                        }
+                        Debug.Log(logSide + " search move: " + currentBoard.BoardCells[tempPiecePlace.x, tempPiecePlace.y] + " from " + tempPiecePlace.x + ", " + tempPiecePlace.y + " to " + tempPieceChange + " " + tempMovePlace.x + ", " + tempMovePlace.y);
+                        Debug.Log("evaluation = " + bestEvaluation);
+
+                        Board tempChildBoard = new Board(tempBoard);
+                        tempChildBoard = MovePiece(tempPiecePlace, tempMovePlace, tempPieceChange, tempBoard);
+
+                        double currentEvaluation 
+                            = MinimaxAlphaBetaPruning(tempChildBoard, depth - 1, !whiteSide, alpha, beta);
+                        if (currentEvaluation < bestEvaluation)
+                        {
+                            bestEvaluation = currentEvaluation;
+                        }
+                        if (bestEvaluation < beta)
+                        {
+                            beta = bestEvaluation;
+                        }
+                        if (beta <= alpha)
+                            break;
                     }
                 }
 

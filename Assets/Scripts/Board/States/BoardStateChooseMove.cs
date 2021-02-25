@@ -112,11 +112,13 @@ public class BoardStateChooseMove : BoardState
             if (boardController.WhiteTurn)
             {
                 boardController.WhiteTurn = false;
+                boardController.TurnText.GetComponent<UnityEngine.UI.Text>().text = "Black turn";
                 return;
             }
             else
             {
                 boardController.WhiteTurn = true;
+                boardController.TurnText.GetComponent<UnityEngine.UI.Text>().text = "White turn";
                 return;
             }
         }

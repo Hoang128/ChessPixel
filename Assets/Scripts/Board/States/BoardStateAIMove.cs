@@ -24,7 +24,7 @@ public class BoardStateAIMove : BoardState
             player = boardController.GetComponent<PlayBoard>().PlayerBlackMgr;
         player.GetComponent<AIMgr>().CanMove = false;
 
-        player.GetComponent<AIMgr>().FindBestMove(currentBoard, isWhiteTurn);
+        player.GetComponent<AIMgr>().StartFindMoveThread(currentBoard, isWhiteTurn);
     }
 
     public override void OnExit()
@@ -34,11 +34,13 @@ public class BoardStateAIMove : BoardState
             if (boardController.WhiteTurn)
             {
                 boardController.WhiteTurn = false;
+                boardController.TurnText.GetComponent<UnityEngine.UI.Text>().text = "Black turn";
                 return;
             }
             else
             {
                 boardController.WhiteTurn = true;
+                boardController.TurnText.GetComponent<UnityEngine.UI.Text>().text = "White turn";
                 return;
             }
         }
