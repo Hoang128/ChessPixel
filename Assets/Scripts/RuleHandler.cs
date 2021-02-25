@@ -158,78 +158,81 @@ public static class RuleHandler
             if (!IsCheckedCell(point + new Vector2Int(1, -1), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(1, -1));
 
-        if (isWhiteKing)
+        if (!IsCheckedCell(point, board, true))
         {
-            if (board.WhiteCanNCastling)
+            if (isWhiteKing)
             {
-                bool castlingMove = true;
-                for (int i = 1; i <= 2; i++)
+                if (board.WhiteCanNCastling)
                 {
-                    if (!IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board))
+                    bool castlingMove = true;
+                    for (int i = 1; i <= 2; i++)
                     {
-                        castlingMove = false;
-                        break;
+                        if (!IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board))
+                        {
+                            castlingMove = false;
+                            break;
+                        }
+                    }
+                    if (castlingMove)
+                    {
+                        moveList.movePlace.Add(point + new Vector2Int(2, 0));
                     }
                 }
-                if (castlingMove)
-                {
-                    moveList.movePlace.Add(point + new Vector2Int(2, 0));
-                }
-            }
 
-            if (board.WhiteCanFCastling)
-            {
-                bool castlingMove = true;
-                for (int i = 1; i <= 2; i++)
+                if (board.WhiteCanFCastling)
                 {
-                    if (!IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board))
+                    bool castlingMove = true;
+                    for (int i = 1; i <= 2; i++)
                     {
-                        castlingMove = false;
-                        break;
+                        if (!IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board))
+                        {
+                            castlingMove = false;
+                            break;
+                        }
                     }
-                }
-                if (board.BoardCells[point.x - 3, point.y] != "0")
-                    castlingMove = false;
-                if (castlingMove)
-                {
-                    moveList.movePlace.Add(point - new Vector2Int(2, 0));
+                    if (board.BoardCells[point.x - 3, point.y] != "0")
+                        castlingMove = false;
+                    if (castlingMove)
+                    {
+                        moveList.movePlace.Add(point - new Vector2Int(2, 0));
+                    }
                 }
             }
-        }
-        else
-        {
-            if (board.BlackCanNCastling)
+            else
             {
-                bool castlingMove = true;
-                for (int i = 1; i <= 2; i++)
+                if (board.BlackCanNCastling)
                 {
-                    if (!IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board))
+                    bool castlingMove = true;
+                    for (int i = 1; i <= 2; i++)
                     {
-                        castlingMove = false;
-                        break;
+                        if (!IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board))
+                        {
+                            castlingMove = false;
+                            break;
+                        }
+                    }
+                    if (castlingMove)
+                    {
+                        moveList.movePlace.Add(point + new Vector2Int(2, 0));
                     }
                 }
-                if (castlingMove)
+                if (board.BlackCanFCastling)
                 {
-                    moveList.movePlace.Add(point + new Vector2Int(2, 0));
-                }
-            }
-            if (board.BlackCanFCastling)
-            {
-                bool castlingMove = true;
-                for (int i = 1; i <= 2; i++)
-                {
-                    if (!IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board))
+                    bool castlingMove = true;
+                    for (int i = 1; i <= 2; i++)
                     {
-                        castlingMove = false;
-                        break;
+                        if (!IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board))
+                        {
+                            castlingMove = false;
+                            break;
+                        }
                     }
-                }
-                if (board.BoardCells[point.x - 3, point.y] != "0")
-                    castlingMove = false;
-                if (castlingMove)
-                {
-                    moveList.movePlace.Add(point - new Vector2Int(2, 0));
+                    if (board.BoardCells[point.x - 3, point.y] != "0")
+                        castlingMove = false;
+                    if (castlingMove)
+                    {
+                        moveList.movePlace.Add(point - new Vector2Int(2, 0));
+                    }
                 }
             }
         }

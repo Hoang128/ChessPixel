@@ -42,7 +42,6 @@ public class AIMgr : MonoBehaviour
     void Start()
     {
         currentBoard = boardController.GetComponent<PlayBoard>().BoardStack.Peek();
-        //FindBestMove(boardController.GetComponent<PlayBoard>().BoardStack.Peek(),whiteSide);
     }
 
     // Update is called once per frame
