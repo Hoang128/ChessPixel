@@ -73,7 +73,7 @@ public class InputManager : MonoBehaviour
 
     void HandleCellTouch(GameObject cell)
     {
-        if (GameObject.FindGameObjectWithTag("Promo Table") == null)
+        if (GameObject.FindGameObjectWithTag("UI Table") == null)
         {
             if (playBoard.GetComponent<PlayBoard>().StateName == "Board Idle")
             {
@@ -96,7 +96,7 @@ public class InputManager : MonoBehaviour
 
     void HandleMoveMarkTouch(GameObject mark)
     {
-        if (GameObject.FindGameObjectWithTag("Promo Table") == null)
+        if (GameObject.FindGameObjectWithTag("UI Table") == null)
         {
             if (playBoard.GetComponent<PlayBoard>().WhiteTurn)
             {

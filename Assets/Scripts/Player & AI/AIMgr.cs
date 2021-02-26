@@ -13,7 +13,6 @@ public class AIMgr : MonoBehaviour
     private Vector2Int finalPiecePlace;
     private Vector2Int finalMovePlace;
     private string finalPieceChange;
-    private Stack<RuleHandler.MoveList> allMoveList;
     private bool whiteSide = true;
     private const double MAX_EVALUATION = 100000;
     private const double MIN_EVALUATION = -100000;
@@ -26,7 +25,6 @@ public class AIMgr : MonoBehaviour
     public Vector2Int FinalPiecePlace { get => finalPiecePlace; set => finalPiecePlace = value; }
     public Vector2Int FinalMovePlace { get => finalMovePlace; set => finalMovePlace = value; }
     public string FinalPieceChange { get => finalPieceChange; set => finalPieceChange = value; }
-    public Stack<MoveList> AllMoveList { get => allMoveList; set => allMoveList = value; }
     public bool WhiteSide { get => whiteSide; set => whiteSide = value; }
     public bool CanMove { get => canMove; set => canMove = value; }
 
@@ -61,17 +59,27 @@ public class AIMgr : MonoBehaviour
     {
         int gameState = GetGameState(currentBoard);
         if (gameState != 0)
-            return;
+        {
+            string result = "Draw!";
+            if (gameState == 1) 
+                result = "White win!";
+            if (gameState == -1)
+                result = "Black win!";
+
+            boardController.GetComponent<PlayBoard>().GameCanvas.GetComponent<Canvas>().CreateResultTable();
+            GameObject table = GameObject.FindGameObjectWithTag("UI Table");
+            table.GetComponentInChildren<UnityEngine.UI.Text>().text = result;
+        }
         else
         {
             switch (AI)
             {
                 case AIType.GREEDY: FindBestMoveGreedy(currentBoard, whiteSide); break;
-                case AIType.MINIMAX_1: FindBestMoveMinimax(currentBoard, whiteSide, 1); break;
-                case AIType.MINIMAX_2: FindBestMoveMinimax(currentBoard, whiteSide, 2); break;
+                case AIType.MINIMAX_1: FindBestMoveMinimaxAlphaBetaPruning(currentBoard, whiteSide, 1); break;
+                case AIType.MINIMAX_2: FindBestMoveMinimaxAlphaBetaPruning(currentBoard, whiteSide, 2); break;
                 case AIType.MINIMAX_3: FindBestMoveMinimaxAlphaBetaPruning(currentBoard, whiteSide, 3); break;
-                case AIType.MINIMAX_4: FindBestMoveMinimax(currentBoard, whiteSide, 4); break;
-                case AIType.MINIMAX_5: FindBestMoveMinimax(currentBoard, whiteSide, 5); break;
+                case AIType.MINIMAX_4: FindBestMoveMinimaxAlphaBetaPruning(currentBoard, whiteSide, 4); break;
+                case AIType.MINIMAX_5: FindBestMoveMinimaxAlphaBetaPruning(currentBoard, whiteSide, 5); break;
             }
         }
 
@@ -184,7 +192,7 @@ public class AIMgr : MonoBehaviour
                         finalMovePlace = tempMovePlace;
                         finalPiecePlace = tempPiecePlace;
                         Debug.Log(logSide + " choose move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
-                        Debug.Log("evaluation = " + bestEvaluation);
+                        Debug.Log("choose evaluation = " + bestEvaluation);
                     }
                 }
                 else
@@ -196,7 +204,7 @@ public class AIMgr : MonoBehaviour
                         finalMovePlace = tempMovePlace;
                         finalPiecePlace = tempPiecePlace;
                         Debug.Log(logSide + " choose move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
-                        Debug.Log("evaluation = " + bestEvaluation);
+                        Debug.Log("choose evaluation = " + bestEvaluation);
                     }
                 }
             }
@@ -250,7 +258,7 @@ public class AIMgr : MonoBehaviour
                         finalMovePlace = tempMovePlace;
                         finalPiecePlace = tempPiecePlace;
                         Debug.Log(logSide + " choose move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
-                        Debug.Log("evaluation = " + bestEvaluation);
+                        Debug.Log("choose evaluation = " + bestEvaluation);
                     }
                 }
                 else
@@ -262,7 +270,7 @@ public class AIMgr : MonoBehaviour
                         finalMovePlace = tempMovePlace;
                         finalPiecePlace = tempPiecePlace;
                         Debug.Log(logSide + " choose move: " + currentBoard.BoardCells[finalPiecePlace.x, finalPiecePlace.y] + " from " + finalPiecePlace.x + ", " + finalPiecePlace.y + " to " + tempBoard.BoardCells[finalMovePlace.x, finalMovePlace.y] + " " + finalMovePlace.x + ", " + finalMovePlace.y);
-                        Debug.Log("evaluation = " + bestEvaluation);
+                        Debug.Log("choose evaluation = " + bestEvaluation);
                     }
                 }
             }
@@ -339,7 +347,7 @@ public class AIMgr : MonoBehaviour
                     }
                 }
 
-                Debug.Log("evaluation = " + bestEvaluation);
+                Debug.Log("best evaluation = " + bestEvaluation);
                 return bestEvaluation;
             }
             else
@@ -372,7 +380,7 @@ public class AIMgr : MonoBehaviour
                     }
                 }
 
-                Debug.Log("evaluation = " + bestEvaluation);
+                Debug.Log("best evaluation = " + bestEvaluation);
                 return bestEvaluation;
             }
         }
@@ -449,7 +457,7 @@ public class AIMgr : MonoBehaviour
                     }
                 }
 
-                Debug.Log("evaluation = " + bestEvaluation);
+                Debug.Log("best evaluation = " + bestEvaluation);
                 return bestEvaluation;
             }
             else
@@ -489,13 +497,13 @@ public class AIMgr : MonoBehaviour
                     }
                 }
 
-                Debug.Log("evaluation = " + bestEvaluation);
+                Debug.Log("best evaluation = " + bestEvaluation);
                 return bestEvaluation;
             }
         }
     }
 
-    int GetGameState(Board currentBoard)
+    public static int GetGameState(Board currentBoard)
     {
         Vector2Int whiteKingPlace = new Vector2Int(-1, -1);
         Vector2Int blackKingPlace = new Vector2Int(-1, -1);
@@ -563,9 +571,9 @@ public class AIMgr : MonoBehaviour
         return 0;
     }
 
-    Stack<MoveList> GetAllMoveInBoard(Board currentBoard, bool whiteSide)
+    public static Stack<MoveList> GetAllMoveInBoard(Board currentBoard, bool whiteSide)
     {
-        allMoveList = new Stack<MoveList>();
+        Stack<MoveList> allMoveList = new Stack<MoveList>();
         for(int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)

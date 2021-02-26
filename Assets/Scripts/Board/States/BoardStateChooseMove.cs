@@ -132,7 +132,7 @@ public class BoardStateChooseMove : BoardState
         }
         else if (boardController.ChooseMovePhase > 1)
         {
-            if (GameObject.FindGameObjectWithTag("Promo Table") == null)
+            if (GameObject.FindGameObjectWithTag("UI Table") == null)
             {
                 if (boardController.WhiteTurn)
                 {
@@ -142,6 +142,8 @@ public class BoardStateChooseMove : BoardState
                         string newPiece = boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalPieceChange;
                         Board newBoard = RuleHandler.MovePiece(clickPoint, movePlace, newPiece, currentBoard);
                         boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
+                        boardController.LastPieceMove.Push(boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace);
+                        boardController.LastPiecePlace.Push(clickPoint);
                         boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
                         boardController.PlayerWhiteMgr.GetComponent<PlayerMgr>().FinalPieceChange = "0";
                         moved = true;
@@ -156,6 +158,8 @@ public class BoardStateChooseMove : BoardState
                         string newPiece = boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalPieceChange;
                         Board newBoard = RuleHandler.MovePiece(clickPoint, movePlace, newPiece, currentBoard);
                         boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
+                        boardController.LastPieceMove.Push(boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace);
+                        boardController.LastPiecePlace.Push(clickPoint);
                         boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalMovePlace = new Vector2Int(-1, -1);
                         boardController.PlayerBlackMgr.GetComponent<PlayerMgr>().FinalPieceChange = "0";
                         moved = true;

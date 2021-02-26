@@ -57,6 +57,9 @@ public class BoardStateAIMove : BoardState
             Board newBoard = RuleHandler.MovePiece(piecePlace, movePlace, pieceAfterChange, currentBoard);
             boardController.GetComponent<PlayBoard>().UpdateBoard(newBoard);
 
+            boardController.LastPieceMove.Push(movePlace);
+            boardController.LastPiecePlace.Push(piecePlace);
+
             moved = true;
             stateMachine.StateChange(new BoardStateIdle(stateMachine, boardController));
         }

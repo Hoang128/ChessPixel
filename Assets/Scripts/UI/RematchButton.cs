@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class RematchButton : MonoBehaviour
 {
-    [SerializeField] GameObject playBoard;
+    GameObject playBoard;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        playBoard = GameObject.Find("PlayBoard");
     }
 
     // Update is called once per frame
@@ -21,5 +21,6 @@ public class RematchButton : MonoBehaviour
     public void Rematch()
     {
         playBoard.GetComponent<PlayBoard>().ResetBoard();
+        Destroy(gameObject);
     }
 }

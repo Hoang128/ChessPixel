@@ -126,35 +126,35 @@ public static class RuleHandler
         moveList.piecePlace = point;
         bool isWhiteKing = isWhitePiece(point, board.BoardCells);
 
-        if (IsEnableToMove(point, point + new Vector2Int(1, 0), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(1, 0), "0", true, board) > 0)
             if (!IsCheckedCell(point + new Vector2Int(1, 0), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(1, 0));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, 0), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, 0), "0", true, board) > 0)
             if (!IsCheckedCell(point + new Vector2Int(-1, 0), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(-1, 0));
 
-        if (IsEnableToMove(point, point + new Vector2Int(0, 1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(0, 1), "0", true, board) > 0)
             if (!IsCheckedCell(point + new Vector2Int(0, 1), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(0, 1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(0, -1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(0, -1), "0", true, board) > 0)
             if (!IsCheckedCell(point + new Vector2Int(0, -1), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(0, -1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board) > 0)
             if (!IsCheckedCell(point + new Vector2Int(1, 1), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(1, 1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, 1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, 1), "0", true, board) > 0)
             if (!IsCheckedCell(point + new Vector2Int(-1, 1), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(-1, 1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, -1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, -1), "0", true, board) > 0)
             if (!IsCheckedCell(point + new Vector2Int(-1, -1), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(-1, -1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(1, -1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(1, -1), "0", true, board) > 0)
             if (!IsCheckedCell(point + new Vector2Int(1, -1), board, isWhiteKing))
                 moveList.movePlace.Add(point + new Vector2Int(1, -1));
 
@@ -167,7 +167,7 @@ public static class RuleHandler
                     bool castlingMove = true;
                     for (int i = 1; i <= 2; i++)
                     {
-                        if (!IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board))
+                        if (IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board) <= 0)
                         {
                             castlingMove = false;
                             break;
@@ -184,7 +184,7 @@ public static class RuleHandler
                     bool castlingMove = true;
                     for (int i = 1; i <= 2; i++)
                     {
-                        if (!IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board))
+                        if (IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board) <= 0)
                         {
                             castlingMove = false;
                             break;
@@ -205,7 +205,7 @@ public static class RuleHandler
                     bool castlingMove = true;
                     for (int i = 1; i <= 2; i++)
                     {
-                        if (!IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board))
+                        if (IsEnableToMove(point, point + new Vector2Int(i, 0), "0", false, board) <= 0)
                         {
                             castlingMove = false;
                             break;
@@ -221,7 +221,7 @@ public static class RuleHandler
                     bool castlingMove = true;
                     for (int i = 1; i <= 2; i++)
                     {
-                        if (!IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board))
+                        if (IsEnableToMove(point, point - new Vector2Int(i, 0), "0", false, board) <= 0)
                         {
                             castlingMove = false;
                             break;
@@ -712,41 +712,83 @@ public static class RuleHandler
         moveList.piecePlace = point;
         int hDir = 1;
         int space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), "0", true,board))
+        bool canMoveNext = true;
+        while (canMoveNext)
         {
-            moveList.movePlace.Add(point + new Vector2Int(hDir * space, 0));
-            if (board.BoardCells[point.x + hDir * space, point.y] != "0")
-                break;
+            int cellState = IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), "0", true, board);
+            if (cellState > 0)
+            {
+                moveList.movePlace.Add(point + new Vector2Int(hDir * space, 0));
+                if (board.BoardCells[point.x + hDir * space, point.y] != "0")
+                    break;
+            }    
+            else
+            {
+                if (cellState == 0) break;
+                
+            }    
+
             space++;
         }
 
         hDir = -1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), "0", true, board))
+        
+        while (canMoveNext)
         {
-            moveList.movePlace.Add(point + new Vector2Int(hDir * space, 0));
-            if (board.BoardCells[point.x + hDir * space, point.y] != "0")
-                break;
+            int cellState = IsEnableToMove(point, point + new Vector2Int(hDir * space, 0), "0", true, board);
+            if (cellState > 0)
+            {
+                moveList.movePlace.Add(point + new Vector2Int(hDir * space, 0));
+                if (board.BoardCells[point.x + hDir * space, point.y] != "0")
+                    break;
+            }
+            else
+            {
+                if (cellState == 0) break;
+                
+            }
+
             space++;
         }
 
         int vDir = 1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(0, vDir * space), "0", true, board))
+        while (canMoveNext)
         {
-            moveList.movePlace.Add(point + new Vector2Int(0, vDir * space));
-            if (board.BoardCells[point.x, point.y + vDir * space] != "0")
-                break;
+            int cellState = IsEnableToMove(point, point + new Vector2Int(0, vDir * space), "0", true, board);
+            if (cellState > 0)
+            {
+                moveList.movePlace.Add(point + new Vector2Int(0, vDir * space));
+                if (board.BoardCells[point.x, point.y + vDir * space] != "0")
+                    break;
+            }
+            else
+            {
+                if (cellState == 0) break;
+                
+            }
+
             space++;
         }
 
         vDir = -1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(0, vDir * space), "0", true, board))
+        while (canMoveNext)
         {
-            moveList.movePlace.Add(point + new Vector2Int(0, vDir * space));
-            if (board.BoardCells[point.x, point.y + vDir * space] != "0")
-                break;
+            int cellState = IsEnableToMove(point, point + new Vector2Int(0, vDir * space), "0", true, board);
+            if (cellState > 0)
+            {
+                moveList.movePlace.Add(point + new Vector2Int(0, vDir * space));
+                if (board.BoardCells[point.x, point.y + vDir * space] != "0")
+                    break;
+            }
+            else
+            {
+                if (cellState == 0) break;
+                
+            }
+
             space++;
         }
         return moveList;
@@ -763,44 +805,85 @@ public static class RuleHandler
         int hDir = 1;
         int vDir = 1;
         int space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board))
+        bool canMoveNext = true;
+        while (canMoveNext)
         {
-            moveList.movePlace.Add(point + new Vector2Int(hDir * space, vDir * space));
-            if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
-                break;
+            int cellState = IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board);
+            if (cellState > 0)
+            {
+                moveList.movePlace.Add(point + new Vector2Int(hDir * space, vDir * space));
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
+                    break;
+            }
+            else
+            {
+                if (cellState == 0) break;
+                
+            }
+
             space++;
         }
 
         hDir = -1;
         vDir = 1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board))
+        while (canMoveNext)
         {
-            moveList.movePlace.Add(point + new Vector2Int(hDir * space, vDir * space));
-            if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
-                break;
+            int cellState = IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board);
+            if (cellState > 0)
+            {
+                moveList.movePlace.Add(point + new Vector2Int(hDir * space, vDir * space));
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
+                    break;
+            }
+            else
+            {
+                if (cellState == 0) break;
+                
+            }
+
             space++;
         }
 
         hDir = 1;
         vDir = -1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board))
+        while (canMoveNext)
         {
-            moveList.movePlace.Add(point + new Vector2Int(hDir * space, vDir * space));
-            if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
-                break;
+            int cellState = IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board);
+            if (cellState > 0)
+            {
+                moveList.movePlace.Add(point + new Vector2Int(hDir * space, vDir * space));
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
+                    break;
+            }
+            else
+            {
+                if (cellState == 0) break;
+                
+            }
+
             space++;
         }
 
         hDir = -1;
         vDir = -1;
         space = 1;
-        while (IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board))
+        while (canMoveNext)
         {
-            moveList.movePlace.Add(point + new Vector2Int(hDir * space, vDir * space));
-            if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
-                break;
+            int cellState = IsEnableToMove(point, point + new Vector2Int(hDir * space, vDir * space), "0", true, board);
+            if (cellState > 0)
+            {
+                moveList.movePlace.Add(point + new Vector2Int(hDir * space, vDir * space));
+                if (board.BoardCells[point.x + hDir * space, point.y + vDir * space] != "0")
+                    break;
+            }
+            else
+            {
+                if (cellState == 0) break;
+                
+            }
+
             space++;
         }
 
@@ -815,28 +898,28 @@ public static class RuleHandler
 
         moveList.piecePlace = point;
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, -2), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, -2), "0", true, board) > 0)
             moveList.movePlace.Add(point + new Vector2Int(-1, -2));
 
-        if (IsEnableToMove(point, point + new Vector2Int(+1, -2), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(+1, -2), "0", true, board) > 0)
             moveList.movePlace.Add(point + new Vector2Int(+1, -2));
 
-        if (IsEnableToMove(point, point + new Vector2Int(+1, +2), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(+1, +2), "0", true, board) > 0)
             moveList.movePlace.Add(point + new Vector2Int(+1, +2));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-1, +2), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-1, +2), "0", true, board) > 0)
             moveList.movePlace.Add(point + new Vector2Int(-1, +2));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-2, -1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-2, -1), "0", true, board) > 0)
             moveList.movePlace.Add(point + new Vector2Int(-2, -1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(+2, -1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(+2, -1), "0", true, board) > 0)
             moveList.movePlace.Add(point + new Vector2Int(+2, -1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(+2, +1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(+2, +1), "0", true, board) > 0)
             moveList.movePlace.Add(point + new Vector2Int(+2, +1));
 
-        if (IsEnableToMove(point, point + new Vector2Int(-2, +1), "0", true, board))
+        if (IsEnableToMove(point, point + new Vector2Int(-2, +1), "0", true, board) > 0)
             moveList.movePlace.Add(point + new Vector2Int(-2, +1));
 
         return moveList;
@@ -858,15 +941,15 @@ public static class RuleHandler
                     //2 Step Move
                     if (point.y == 1)
                     {
-                        if (IsEnableToMove(point, new Vector2Int(point.x, 3), "0", false, board))
+                        if (IsEnableToMove(point, new Vector2Int(point.x, 3), "0", false, board) > 0)
                         {
-                            if (IsEnableToMove(point, new Vector2Int(point.x, 2), "0", false, board))
+                            if (IsEnableToMove(point, new Vector2Int(point.x, 2), "0", false, board) > 0)
                                 moveList.movePlace.Add(new Vector2Int(point.x, 3));
                         }
                     }
 
                     //Normal Moves
-                    if (IsEnableToMove(point, point + new Vector2Int(0, 1), "0", false, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(0, 1), "0", false, board) > 0)
                     {
                         if (point.y < 6)
                             moveList.movePlace.Add(point + new Vector2Int(0, 1));
@@ -884,7 +967,7 @@ public static class RuleHandler
                     }
 
                     //Capture
-                    if (IsEnableToMove(point, point + new Vector2Int(-1, 1), "0", true, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(-1, 1), "0", true, board) > 0)
                     {
                         if (board.BoardCells[point.x - 1, point.y + 1] != "0")
                         {
@@ -905,7 +988,7 @@ public static class RuleHandler
                     }
 
                     //Promo
-                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board) > 0)
                     {
                         if (board.BoardCells[point.x + 1, point.y + 1] != "0")
                         {
@@ -932,14 +1015,14 @@ public static class RuleHandler
                     // 2 Step Move
                     if (point.y == 6)
                     {
-                        if (IsEnableToMove(point, new Vector2Int(point.x, 4), "0", false, board))
+                        if (IsEnableToMove(point, new Vector2Int(point.x, 4), "0", false, board) > 0)
                         {
-                            if (IsEnableToMove(point, new Vector2Int(point.x, 5), "0", false, board))
+                            if (IsEnableToMove(point, new Vector2Int(point.x, 5), "0", false, board) > 0)
                                 moveList.movePlace.Add(new Vector2Int(point.x, 4));
                         }
                     }
 
-                    if (IsEnableToMove(point, point + new Vector2Int(0, -1), "0", false, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(0, -1), "0", false, board) > 0)
                     {
                         if (point.y > 1)
                             moveList.movePlace.Add(point + new Vector2Int(0, -1));
@@ -957,7 +1040,7 @@ public static class RuleHandler
                     }
 
                     //Capture
-                    if (IsEnableToMove(point, point + new Vector2Int(-1, -1), "0", true, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(-1, -1), "0", true, board) > 0)
                     {
                         if (board.BoardCells[point.x - 1, point.y - 1] != "0")
                         {
@@ -978,7 +1061,7 @@ public static class RuleHandler
                     }
 
                     //Normal Moves
-                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board))
+                    if (IsEnableToMove(point, point + new Vector2Int(1, 1), "0", true, board) > 0)
                     {
                         if (board.BoardCells[point.x + 1, point.y - 1] != "0")
                         {
@@ -1003,27 +1086,27 @@ public static class RuleHandler
         return moveList;
     }
 
-    public static bool IsEnableToMove(Vector2Int piecePlace, Vector2Int newPlace, string newPiece, bool isCaptureMove, Board board)
+    public static int IsEnableToMove(Vector2Int piecePlace, Vector2Int newPlace, string newPiece, bool isCaptureMove, Board board)
     {
-        bool canMove = false;
+        int canMove = 0;
         bool whitePiece = isWhitePiece(piecePlace, board.BoardCells);
         if ((newPlace.x >= 0) && (newPlace.x <= 7) && (newPlace.y >= 0) && (newPlace.y <= 7))
         {
             if ((board.BoardCells[newPlace.x, newPlace.y] == "0"))
-                canMove = true;
+                canMove = 1;
             else
             {
                 if (isCaptureMove)
                 {
                     bool otherWhite = isWhitePiece(new Vector2Int(newPlace.x, newPlace.y), board.BoardCells);
                     if (whitePiece != otherWhite)
-                        canMove = true;
+                        canMove = 2;
                 }
             }
         }
 
         //Check if the move is not a self-destruction _(:3JZ)_
-        if (canMove)
+        if (canMove > 0)
         {
             Board newBoard = new Board(MovePiece(piecePlace, newPlace, newPiece, board));
             if (whitePiece)
@@ -1036,7 +1119,7 @@ public static class RuleHandler
                         {
                             if (IsCheckedCell(new Vector2Int(i, j), newBoard, whitePiece))
                             {
-                                canMove = false;
+                                canMove = -1;
                             }
                         }
                     }
@@ -1052,7 +1135,7 @@ public static class RuleHandler
                         {
                             if (IsCheckedCell(new Vector2Int(i, j), newBoard, whitePiece))
                             {
-                                canMove = false;
+                                canMove = -1;
                             }
                         }
                     }

@@ -264,7 +264,7 @@ GameObject:
   - component: {fileID: 636939347}
   - component: {fileID: 636939346}
   m_Layer: 5
-  m_Name: RematchButton
+  m_Name: NewMatchButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -287,8 +287,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -230.3, y: -567.02}
-  m_SizeDelta: {x: 197.97925, y: 78.88554}
+  m_AnchoredPosition: {x: -178.6, y: -567.02}
+  m_SizeDelta: {x: 316.2021, y: 78.88554}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &636939346
 MonoBehaviour:
@@ -466,7 +466,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Undo Move
+  m_Text: Undo move
 --- !u!222 &993317745
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -622,7 +622,7 @@ Canvas:
   m_GameObject: {fileID: 1351545549}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 519420031}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -669,6 +669,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   promoTable: {fileID: 2869335901255077916, guid: b774ef62f6294bb498b604772aeafdef, type: 3}
+  resultTable: {fileID: 1989776273578752709, guid: 3f4f09fb9adfeef4fa13204b091e9c7d, type: 3}
 --- !u!1 &1430088552
 GameObject:
   m_ObjectHideFlags: 0
@@ -931,8 +932,10 @@ MonoBehaviour:
   captureMarkObject: {fileID: 7658253087374125491, guid: 3d888bb1f76250341a45e7261e9fc6db, type: 3}
   movePromoMarkObject: {fileID: 5208716086144950585, guid: 8edbcc51dc2549c41a7eb7d10b4f5754, type: 3}
   capturePromoMarkObject: {fileID: 7238664853878211670, guid: 1b856161e03ddce4c87fe0fddf465e88, type: 3}
+  lastMoveMarkObject: {fileID: 3794949331894551442, guid: f71964597e8caf843b33acf108292f16, type: 3}
   gameCanvas: {fileID: 1351545549}
   turnText: {fileID: 1647923084}
+  movingAnimEffect: {fileID: 9017251314946257540, guid: 97793c739ccd1b6438269180c1304610, type: 3}
   playerWhite: {fileID: 4563212219635069427, guid: 3dd77e89405ff5947874c872bcdf8cae, type: 3}
   playerBlack: {fileID: 917670716431832993, guid: cea4a4cd5fd113a44b9b9bd087438eac, type: 3}
   cellSize: 5
@@ -987,8 +990,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -567.02}
-  m_SizeDelta: {x: 197.97882, y: 78.88776}
+  m_AnchoredPosition: {x: 179.1, y: -567.02}
+  m_SizeDelta: {x: 316.20477, y: 78.88776}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1897255890
 MonoBehaviour:

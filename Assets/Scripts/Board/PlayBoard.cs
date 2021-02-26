@@ -11,8 +11,10 @@ public class PlayBoard : MonoBehaviour
     [SerializeField] GameObject captureMarkObject;
     [SerializeField] GameObject movePromoMarkObject;
     [SerializeField] GameObject capturePromoMarkObject;
+    [SerializeField] GameObject lastMoveMarkObject;
     [SerializeField] GameObject gameCanvas;
     [SerializeField] GameObject turnText;
+    [SerializeField] GameObject movingAnimEffect;
 
     [SerializeField] GameObject playerWhite;
     [SerializeField] GameObject playerBlack;
@@ -27,15 +29,20 @@ public class PlayBoard : MonoBehaviour
     private GameObject playerWhiteMgr;
     private GameObject playerBlackMgr;
     private int chooseMovePhase = 0;
+    private bool canRematch = true;
+    private bool canUndoMove = false;
+    private GameObject movingAnimObj;
+    private Stack<Vector2Int> lastPiecePlace;
+    private Stack<Vector2Int> lastPieceMove;
     private string[,] startBoardCell = new string[8, 8]
     {
         { "r" , "p", "0", "0", "0", "0", "P", "R" },
-        { "kn", "p", "0", "0", "0", "0", "P", "KN" },
+        { "kn", "p", "0", "0", "0", "0", "P", "KN"},
         { "b" , "p", "0", "0", "0", "0", "P", "B" },
         { "q" , "p", "0", "0", "0", "0", "P", "Q" },
         { "k" , "p", "0", "0", "0", "0", "P", "K" },
         { "b" , "p", "0", "0", "0", "0", "P", "B" },
-        { "kn", "p", "0", "0", "0", "0", "P", "KN" },
+        { "kn", "p", "0", "0", "0", "0", "P", "KN"},
         { "r" , "p", "0", "0", "0", "0", "P", "R" }
     };
     private string[,] testBoardCell = new string[8, 8]
@@ -66,10 +73,18 @@ public class PlayBoard : MonoBehaviour
     public GameObject GameCanvas { get => gameCanvas; set => gameCanvas = value; }
     public int ChooseMovePhase { get => chooseMovePhase; set => chooseMovePhase = value; }
     public GameObject TurnText { get => turnText; set => turnText = value; }
+    public bool CanRematch { get => canRematch; set => canRematch = value; }
+    public bool CanUndoMove { get => canUndoMove; set => canUndoMove = value; }
+    public GameObject MovingAnimEffect { get => movingAnimEffect; set => movingAnimEffect = value; }
+    public GameObject MovingAnimObj { get => movingAnimObj; set => movingAnimObj = value; }
+    public Stack<Vector2Int> LastPiecePlace { get => lastPiecePlace; set => lastPiecePlace = value; }
+    public Stack<Vector2Int> LastPieceMove { get => lastPieceMove; set => lastPieceMove = value; }
+    public GameObject LastMoveMarkObject { get => lastMoveMarkObject; set => lastMoveMarkObject = value; }
 
     // Start is called before the first frame update
     void Start()
     {
+        movingAnimObj = null;
         PlayerMgr playerComp;
         playerWhiteMgr = GameObject.Instantiate(playerWhite);
         playerComp = playerWhiteMgr.GetComponent<PlayerMgr>();
@@ -84,15 +99,17 @@ public class PlayBoard : MonoBehaviour
         else
             playerBlackMgr.GetComponent<AIMgr>().WhiteSide = false;
 
-        stateMachine = new StateMachine();
-        stateMachine.StateChange(new BoardStateIdle(stateMachine, this));
-
         InitPlayBoard();
         InitUIBoard();
         UpdateUIBoard();
 
-        clickPoint.x = -1;
-        clickPoint.y = -1;
+        canRematch = true;
+        canUndoMove = false;
+
+        stateMachine = new StateMachine();
+        stateMachine.StateChange(new BoardStateIdle(stateMachine, this));
+
+        clickPoint = new Vector2Int(-1, -1);
     }
 
     // Update is called once per frame
@@ -130,6 +147,9 @@ public class PlayBoard : MonoBehaviour
         Board startBoard = new Board();
         boardStack.Push(startBoard);
         boardStack.Peek().UpdateCells(startBoardCell);
+
+        lastPieceMove = new Stack<Vector2Int>();
+        lastPiecePlace = new Stack<Vector2Int>();
     }
 
     public void InitUIBoard()
@@ -173,13 +193,44 @@ public class PlayBoard : MonoBehaviour
             boardStack.Pop();
             boardStack.Pop();
 
+            lastPieceMove.Pop();
+            lastPieceMove.Pop();
+
+            lastPiecePlace.Pop();
+            lastPiecePlace.Pop();
+
             UpdateUIBoard();
+
+            GameObject[] lastMoveMarks = GameObject.FindGameObjectsWithTag("Last Move Marker");
+            if ((lastMoveMarks.Length != 0) && (lastMoveMarks != null))
+            {
+                foreach (GameObject mark in lastMoveMarks)
+                {
+                    GameObject.Destroy(mark);
+                }
+            }
+
+            Vector2 startPosition = transform.position;
+            if (lastPieceMove.Count > 0)
+            {
+                Vector2Int cellPos = lastPieceMove.Peek();
+                GameObject.Instantiate(lastMoveMarkObject, startPosition + new Vector2(cellPos.x * cellSize, cellPos.y * cellSize), transform.rotation);
+            }
+
+            if (lastPiecePlace.Count > 0)
+            {
+                Vector2Int cellPos = lastPiecePlace.Peek();
+                GameObject.Instantiate(lastMoveMarkObject, startPosition + new Vector2(cellPos.x * cellSize, cellPos.y * cellSize), transform.rotation);
+            }
         }
     }
 
     public void ResetBoard()
     {
         boardStack.Clear();
+        lastPieceMove.Clear();
+        lastPiecePlace.Clear();
+
         InitPlayBoard();
         UpdateUIBoard();
 

@@ -9,7 +9,8 @@ TagManager:
   - Move Marker
   - Capture Marker
   - Marker
-  - Promo Table
+  - Last Move Marker
+  - UI Table
   layers:
   - Default
   - TransparentFX

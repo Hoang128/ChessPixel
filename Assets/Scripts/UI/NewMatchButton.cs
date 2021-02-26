@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UndoMoveButton : MonoBehaviour
+public class NewMatchButton : MonoBehaviour
 {
     [SerializeField] GameObject playBoard;
 
@@ -18,7 +18,7 @@ public class UndoMoveButton : MonoBehaviour
     {
         if (GameObject.Find("UI Table") == null)
         {
-            if (playBoard.GetComponent<PlayBoard>().CanUndoMove)
+            if (playBoard.GetComponent<PlayBoard>().CanRematch)
             {
                 if (transform.GetComponent<Button>().interactable == false)
                     transform.GetComponent<Button>().interactable = true;
@@ -33,8 +33,8 @@ public class UndoMoveButton : MonoBehaviour
             transform.GetComponent<Button>().interactable = false;
     }
 
-    public void UndoMove()
+    public void Rematch()
     {
-        playBoard.GetComponent<PlayBoard>().UndoMove();
+        playBoard.GetComponent<PlayBoard>().ResetBoard();
     }
 }
